@@ -1,0 +1,64 @@
+{
+	"System": {
+		"Data": {
+			"defaultConnectionName": "default"
+		},
+		"Logging": {
+			"enabled": true,
+			"handlers": [
+				{
+					"action": "add",
+					"name": "db",
+					"value": {
+						"enabled": false,
+						"connection": "default",
+						"table": "logs",
+						"mask": 31
+					}
+				},
+				{
+					"action": "add",
+					"name": "email",
+					"value": {
+						"enabled": false,
+						"to": "",
+						"mask": 24
+					}
+				},
+				{
+					"action": "add",
+					"name": "file",
+					"value": {
+						"enabled": false,
+						"folder": "logs",
+						"mask": 28
+					}
+				}
+			]
+		},
+		"Web": {
+			"handlers": [
+				{
+					"action": "add",
+					"name": "page-handler",
+					"value": "\System\Web\PageHandler"
+				},
+				{
+					"action": "add",
+					"name": "scss-handler",
+					"value": "\System\Web\SCSS\Handler"
+				},
+				{
+					"action": "add",
+					"name": "cms-page-handler",
+					"value": "\System\Web\CMS\PageHandler"
+				},
+				{
+					"action": "add",
+					"name": "api-handler",
+					"value": "\System\Web\APIHandler"
+				},
+			]
+		}
+	}
+}

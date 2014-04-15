@@ -1,0 +1,30 @@
+<?php
+
+
+?>
+<!DOCTYPE html>
+<html class="no-js">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<base href="<?= $this->Application->Config->Framework->base_url ?>" />
+
+	<title><?= ((isset($this->Title) && trim($this->Title) != '') ? ' - '.$this->Title : '') ?></title>
+
+	<link rel="stylesheet" type="text/css" href="css/reset.css" />
+	<link rel="stylesheet" type="text/css" href="css/layout.css" />
+	<link rel="stylesheet" type="text/css" href="css/style.css" />
+	<?= $this->GetStyleSheets() ?>
+
+	<script type="text/javascript" src="js/lib/html5shiv.js"></script>
+	<script type="text/javascript" src="js/lib/modernizr.min.js"></script>
+	<script type="text/javascript" src="js/lib/jquery.min.js"></script>
+	<script type="text/javascript" src="js/lib/selectivizr.min.js"></script>
+	<script type="text/javascript" src="js/site.js"></script>
+	<?= $this->GetJSFiles() ?>
+
+	<?= $this->GetStyles() ?>
+</head>
+<body>
+	<?= $this->GetContent('default') ?>
+</body>
+</html>
