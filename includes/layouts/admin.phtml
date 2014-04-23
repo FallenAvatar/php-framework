@@ -6,61 +6,23 @@
 <html class="no-js">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<base href="<?= $this->Application->Config->Framework->base_url ?>admin/" />
+	<base href="<?= $this->Application->Config->System->Web->base_url ?>admin/" />
 
-	<title>Admin Panel - <?= $this->Title ?></title>
+	<title>Admin Panel<?= ((isset($this->Title) && trim($this->Title) != '') ? ' - '.$this->Title : '') ?></title>
 	
 	<link rel="stylesheet" type="text/css" href="../css/reset.css" />
 	<link rel="stylesheet" type="text/css" href="css/style.css" />
-	<link rel="stylesheet" type="text/css" href="css/css3.css" />
 	<?= $this->GetStyleSheets() ?>
 
-	<script type="text/javascript" src="../js/lib/html5.js"></script>
-	<script type="text/javascript" src="../js/lib/modernizr.min.js"></script>
-	<script type="text/javascript" src="../js/lib/jquery-1.7.1.min.js"></script>
-	<script type="text/javascript" src="../js/lib/selectivizr.min.js"></script>
-	<script type="text/javascript" src="../js/lib/tiny_mce/jquery.tinymce.js"></script>
+	<script type="text/javascript" src="../js/lib/modernizer.min.js"></script>
+	<script type="text/javascript" src="../js/lib/jquery.min.js"></script>
 	<script type="text/javascript" src="../js/site.js"></script>
 	<script type="text/javascript" src="../js/admin.js"></script>
 	<?= $this->GetJSFiles() ?>
+	
 	<?= $this->GetStyles() ?>
 </head>
 <body>
-	<div id="headerwrap">
-		<div id="header">
-			<h1><a href="index.php">Admin Panel</a></h1>
-		
-			<div id="info">
-				<p><img src="images/icons/users.png" alt="" /> Logged in as <a href="#">admin</a>. <a href="logout.php">Logout?</a></p>
-			</div>
-		</div><!--end #header-->
-	</div><!--end #headerwrap-->
-
-	<div id="navigationwrap">
-		<div id="navigation">
-			<ul>
-				<li id="dashboard" class="first"><a href="dashboard.php">Dashboard</a></li>
-				<li id="users"><a href="users.php">Users</a></li>
-				<li id="forums"><a href="forumcategories.php">Forum Categories</a></li>
-				<li id="forums"><a href="forums.php">Forums</a></li>
-				<li id="pages"><a href="pages.php">Pages</a></li>
-				<li id="settings"><a href="settings.php">Settings</a></li>
-			</ul>
-		
-			<br class="clear" />
-		</div><!--end #navigation-->
-	</div><!--end #navigationwrap-->
-	<div id="wrapper">
-		<div id="container">
-			<?php echo $this->GetContent('default'); ?>
-			<div class="clear"></div>
-		</div><!--end #container-->
-	</div><!--end #wrapper-->
-
-	<div id="footerwrap">
-		<div id="footer">
-			<p>All Rights Reserved</p>
-		</div>
-	</div>
+	<?=$this->GetContent('default')?>
 </body>
 </html>

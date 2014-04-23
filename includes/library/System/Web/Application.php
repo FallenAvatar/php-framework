@@ -37,31 +37,6 @@ namespace System\Web
 			}
 				
 			throw new \ErrorException($errstr, $errno, 0, $errfile, $errline);
-			ob_end_clean();
-			
-			header('HTTP/1.0 500 Server Error');
-?>
-<!DOCTYPE html>
-<html>
-<head>
-	<title>Error in Site</title>
-	<link rel="stylesheet" type="text/css" href="css/reset.css" />
-	<style type="text/css">
-		h1{width: 100%;display:block;background-color:#f7fdb6;color:#FF0000;padding:10px;margin:25px 0;font-size:20pt;font-weight:bold;}
-		h2{font-weight:bold;font-size:16pt;}
-	</style>
-</head>
-<body>
-	<h1>Error</h1>
-	<h2><?=$errstr?></h2>
-	At <?=$errfile?> on line [<?=$errline?>]<br />
-	Error #: <?=$errno?><br />
-	<br />
-	<pre><?=print_r($errcontext,true)?></pre>
-</body>
-</html>
-<?php
-			exit();
 		}
 		
 		public function ExceptionHandler($ex)
@@ -162,7 +137,7 @@ namespace System\Web
 </head>
 <body>
 	<h1>404 Page not found</h1>
-	<h2>The page that you have requested could not be found.</h2><? if( $this->Config->Site->debug == true ) { echo "\r\n"; ?>
+	<h2>The page that you have requested could not be found.</h2><? if( $this->Config->System->debug == true ) { echo "\r\n"; ?>
 	<!--
 		<?=$path . "\r\n" . print_r(debug_backtrace(), true) ?>
 	--><? echo "\r\n"; } ?>
@@ -187,8 +162,8 @@ namespace System\Web
 
 		protected function _loadConfig()
 		{
-			$this->Config = new \System\Configuration\Config($this->Dirs->Configs.'site.ini');
-			$configs = array();
+			$files = array();
+			$files[] = $this->Dirs->Configs.'system.json';
 
 			$d = dir($this->Dirs->Configs);
 
@@ -198,17 +173,19 @@ namespace System\Web
 				if( !is_file($filePath) )
 					continue;
 					
-				if( substr($filePath, -4) != '.ini' )
+				if( substr($filePath, -5) != '.json' )
 					continue;
 					
-				if( $entry == 'site.ini' )
+				if( $entry == 'system.json' || $entry == 'site.json' )
 					continue;
 					
-				$configName = substr($entry,0,-4);
-				
-				$c = new \System\Configuration\Config($filePath, true);
-				$this->Config->Merge($c);
+				$files[] = $filePath;
 			}
+			
+			$files[] = $this->Dirs->Configs.'site.json';
+			
+			$configStack = new \System\Configuration\ConfigStack($files);
+			$this->Config = $configStack->GetMergedConfig();
 		}
 		
 		protected function _fixPhp()
@@ -217,20 +194,12 @@ namespace System\Web
 			{
 				if( isset($this->Config->PHP->functions) )
 				{
-					$functions = $this->Config->PHP->functions->ToArray();
-					foreach($functions as $func => $params)
+					//crash($this->Config->PHP->functions);
+					$functions = $this->Config->PHP->functions;
+					foreach($functions as $f)
 					{
-						$params_to_pass = array();
-						
-						if( !is_array($params) )
-							$params_to_pass[] = $params;
-						else
-						{
-							foreach($params as $param)
-							{
-								$params_to_pass[] = $param;
-							}
-						}
+						$func = $f['name'];
+						$params_to_pass = $f['args'];
 						
 						call_user_func_array($func, $params_to_pass);
 					}

@@ -42,7 +42,6 @@ namespace System\Web
 
 			if( !in_array($ext,$exts) )
 				return false;
-			
 
 			return true;
 		}
