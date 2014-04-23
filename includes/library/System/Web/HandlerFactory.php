@@ -11,7 +11,7 @@ namespace System\Web
 
 			$found = false;
 
-			foreach($handler_classes as $class)
+			foreach($handler_classes as $name => $class)
 			{
 				$handler = new $class();
 				if( $handler->CanHandleRequest($app) )

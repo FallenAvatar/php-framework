@@ -4,7 +4,9 @@ namespace System\Logging
 {
 	class Logger extends \System\Object
 	{
-		public static function Log($message, $level, $data = null)
+	private static $handlers = null;
+	
+	private static function Init()
 		{
 			$app = \System\Application::GetInstance();
 			$config = $app->Config;
@@ -17,5 +19,11 @@ namespace System\Logging
 				
 			}
 		}
+	
+	public static function Log($message, $level, $data = null)
+	{
+		foreach(static::$handlers as $handler)
+			$handler->Log($message, $level, $data);
+	}
 	}
 }

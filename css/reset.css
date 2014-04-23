@@ -33,6 +33,8 @@ time, mark, audio, video {
     background:transparent;
 }
 
+html, body { width: 100%; height: 100%; }
+
 body {
     line-height:1;
 }
