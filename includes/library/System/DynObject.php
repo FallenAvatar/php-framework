@@ -76,7 +76,7 @@ namespace System
 		{
 			$arrOther = $other->ToArray();
 			
-			$this->arrInternal = array_merge($this->arrInternal, $arrOther);
+			$this->arrInternal = array_merge_recursive($this->arrInternal, $arrOther);
 			
 			return $this;
 		}

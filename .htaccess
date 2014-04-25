@@ -11,7 +11,6 @@ RewriteRule ^includes/library/base-web.php$ - [L,NC]
 
 # Prevent direct access to includes and config files
 RewriteRule ^includes/(.*)$ 404.html [L,NC]
-RewriteRule ^(.*)\.ini$ 404.html [L,NC]
 
 # Rewrite appropiate URLs to our engine
 RewriteRule ^$ includes/library/base-web.php [L,NC,QSA]

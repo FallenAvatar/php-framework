@@ -31,7 +31,7 @@ class Handler implements \System\Web\IRequestHandler
 		
 		if( !is_file($this->path) && !is_file($this->orig_path) )
 		{
-			if( $App->Config->Site->debug == true )
+			if( $App->Config->System->debug == true )
 				echo 'Path = ' . $this->path . "\n" . 'Original Path = ' . $this->orig_path . "\n";
 			return false;
 		}
@@ -52,7 +52,7 @@ class Handler implements \System\Web\IRequestHandler
 		{
 			$mtime = filemtime($cached_path);
 			
-			if( !$App->Config->Site->debug && filemtime($lPath) <= $mtime )
+			if( !$App->Config->System->debug && filemtime($lPath) <= $mtime )
 			{
 				$icache = $cached_path.'.imports';
 				if (is_readable($icache))

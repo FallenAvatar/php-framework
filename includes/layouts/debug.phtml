@@ -6,7 +6,7 @@
 <html class="no-js">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<base href="<?= $this->Application->Config->Framework->base_url ?>" />
+	<base href="<?= $this->Application->Config->System->Web->base_url ?>" />
 
 	<title><?= ((isset($this->Title) && trim($this->Title) != '') ? ' - '.$this->Title : '') ?></title>
 
@@ -14,10 +14,8 @@
 	<link rel="stylesheet" type="text/css" href="css/debug.css" />
 	<?= $this->GetStyleSheets() ?>
 
-	<script type="text/javascript" src="js/lib/html5shiv.js"></script>
 	<script type="text/javascript" src="js/lib/modernizer.min.js"></script>
 	<script type="text/javascript" src="js/lib/jquery.min.js"></script>
-	<script type="text/javascript" src="js/lib/selectivizr.min.js"></script>
 	<?= $this->GetJSFiles() ?>
 
 	<?= $this->GetStyles() ?>
