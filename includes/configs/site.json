@@ -1,0 +1,23 @@
+{
+	"API": {
+		"enabled": true
+	},
+	"Database": {
+		"default": {
+			"driver": "MySql",
+			"host": "localhost",
+			"user": "",
+			"pass": "",
+			"db_name": ""
+		}
+	},
+	"Site": {
+		"version": "0.1.0.0"
+	},
+	"System": {
+		"debug": true,
+		"Web": {
+			"base_url": "http://auth.thisguys.com/"
+		}
+	}
+}
