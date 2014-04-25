@@ -34,19 +34,19 @@ namespace System
 		
 		public function Init()
 		{
-			
+			$this->OnInit();
 		}
 		public function OnInit() {}
 		
 		public function Load()
 		{
-			
+			$this->OnLoad();
 		}
 		public function OnLoad() {}
 		
 		public function Unload()
 		{
-			
+			$this->OnUnload();
 		}
 		public function OnUnload() {}
 	}

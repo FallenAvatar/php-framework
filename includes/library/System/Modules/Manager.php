@@ -19,12 +19,12 @@ namespace System\Modules
 					continue;
 					
 				$entry = \System\IO\Path::Combine($dir, $e);
-				$config = \System\IO\Path::Combine($entry, 'module.json');
+				$config_file = \System\IO\Path::Combine($entry, 'module.json');
 				
-				if( !\System\IO\File::Exists($config) )
+				if( !\System\IO\File::Exists($config_file) )
 					continue;
 					
-				
+				//$config 
 			}
 			
 			return $ret;
