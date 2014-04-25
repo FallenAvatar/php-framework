@@ -9,9 +9,10 @@ if( !isset($GLOBALS['type']) )
 	exit();
 }
 
-require_once(dirname(__FILE__).DS.'..'.DS.'library'.DS.'System'.DS.'Autoloader.php');
+require_once(dirname(__FILE__).DS.'functions.php');
+require_once(dirname(__FILE__).DS.'System'.DS.'Autoloader.php');
 
-\System\Autoloader::Init(dirname(__FILE__).DS.'..'.DS.'library'.DS);
+\System\Autoloader::Init(dirname(__FILE__).DS);
 
 if( \System\Autoloader::CanLoadClass("\\Site\\".$type."\\Application") )
 	$class = "\\Site\\".$type."\\Application";

@@ -1,0 +1,17 @@
+{
+	"name": "Test",
+	"description": "A test module",
+	"author": "ThisGuys",
+	"website": "http://thisguys.com",
+	"safe_name": "test",
+	"version": "0.1.0.0",
+	"code": {
+		"main_class": "Test\\Module",
+		"namespaces": [
+			"Test",
+			"Test2"
+		]
+	},
+	"resources": {
+	}
+}

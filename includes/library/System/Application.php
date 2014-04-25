@@ -50,6 +50,7 @@ abstract class Application extends Object
 		$this->AddDir('Library', $this->Dirs->Root.'includes'.DS.'library'.DS);
 		$this->AddDir('Configs', $this->Dirs->Root.'includes'.DS.'configs'.DS);
 		$this->AddDir('Layouts', $this->Dirs->Root.'includes'.DS.'layouts'.DS);
+		$this->AddDir('Modules', $this->Dirs->Root.'includes'.DS.'modules'.DS);
 		$this->AddDir('Data', $this->Dirs->Root.'includes'.DS.'data'.DS);
 		$this->AddDir('Cache', $this->Dirs->Data.'cache'.DS);
 	}
