@@ -2,7 +2,7 @@
 
 function crash($data)
 {
-	echo '<html><body><pre>'.print_r($data, true).'</pre></body></html>';
+	echo '<html><body><h1>Debug - Crash</h1><br /><pre style="display: block; width: 90%; padding: 2%; border: 1px solid black;">'.print_r($data, true).'</pre></body></html>';
 	exit();
 }
 
