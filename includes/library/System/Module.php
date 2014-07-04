@@ -4,32 +4,19 @@ namespace System
 {
 	class Module extends System\Object
 	{
-		protected $name;
-		protected function _getName() { return $this->name; }
+		protected $config;
+		protected function _getName() { return $this->config->name; }
+		protected function _getDescription() { return $this->config->description; }
+		protected function _getAuthor() { return $this->config->author; }
+		protected function _getWebsite() { return $this->config->website; }
+		protected function _getSafeName() { return $this->config->safe_name; }
+		protected function _getVersion() { return $this->config->version; }
 		
-		protected $description;
-		protected function _getDescription() { return $this->description; }
-		
-		protected $author;
-		protected function _getAuthor() { return $this->author; }
-		
-		protected $website;
-		protected function _getWebsite() { return $this->website; }
-		
-		protected $safe_name;
-		protected function _getSafeName() { return $this->safe_name; }
-		
-		protected $version;
-		protected function _getVersion() { return $this->version; }
+		protected function _getCodeNamespaces() { return $this->config->code->namespaces; }
 		
 		public function __construct($config)
 		{
-			$this->name = $config->name;
-			$this->description = $config->description;
-			$this->author = $config->author;
-			$this->website = $config->website;
-			$this->safe_name = $config->safe_name;
-			$this->version = $config->version;
+			$this->config = $config;
 		}
 		
 		public function Init()

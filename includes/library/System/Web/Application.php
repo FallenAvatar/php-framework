@@ -155,6 +155,8 @@ namespace System\Web
 
 			$this->_loadConfig();
 			$this->_fixPhp();
+			
+			\System\Modules\Manager::FindModules();
 
 			$this->Request = new \System\Web\HttpRequest();
 			$this->Response = new \System\Web\HttpResponse();
@@ -219,8 +221,12 @@ namespace System\Web
 		protected function _run()
 		{
 			session_start();
+			
+			\System\Modules\Manager::LoadModules();
 
 			\System\Web\HandlerFactory::ProcessRequest();
+			
+			\System\Modules\Manager::UnloadModules();
 		}
 	}
 }
