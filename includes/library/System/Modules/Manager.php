@@ -57,5 +57,12 @@ namespace System\Modules
 		public static function RegisterControl($mod_name, $control_name, $options = array())
 		{
 		}
+
+		public static function GetBasePathForClass($class_name)
+		{
+		}
 	}
 }
+
+
+
