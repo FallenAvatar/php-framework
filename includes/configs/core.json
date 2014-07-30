@@ -1,0 +1,88 @@
+{
+	"API": {
+		"enabled": false,
+		"base_url": "/api/",
+		"ns": "\\Site\\API"
+	},
+	"CMS": {
+		"enabled": false,
+		"database": {
+			"connection": "default",
+			"table_prefix": "cms"
+		}
+	},
+	"PHP": {
+		"functions": [
+			{
+				"name": "date_default_timezone_set",
+				"args": [
+					"America/New_York"
+				]
+			}
+		]
+	},
+	"Core": {
+		"debug": false,
+		"require_ssl": false,
+		"Data": {
+			"defaultConnectionName": "default"
+		},
+		"Logging": {
+			"enabled": true,
+			"handlers": [
+				{
+					"action": "add",
+					"name": "db",
+					"value": {
+						"enabled": false,
+						"connection": "default",
+						"table": "logs",
+						"mask": 31
+					}
+				},
+				{
+					"action": "add",
+					"name": "email",
+					"value": {
+						"enabled": false,
+						"to": "",
+						"mask": 24
+					}
+				},
+				{
+					"action": "add",
+					"name": "file",
+					"value": {
+						"enabled": false,
+						"folder": "logs",
+						"mask": 28
+					}
+				}
+			]
+		},
+		"Web": {
+			"handlers": [
+				{
+					"action": "add",
+					"name": "scss-handler",
+					"value": "\\Core\\Web\\SCSS\\Handler"
+				},
+				{
+					"action": "add",
+					"name": "api-handler",
+					"value": "\\Core\\Web\\APIHandler"
+				},
+				{
+					"action": "add",
+					"name": "page-handler",
+					"value": "\\Core\\Web\\PageHandler"
+				},
+				{
+					"action": "add",
+					"name": "cms-page-handler",
+					"value": "\\Core\\Web\\CMS\\PageHandler"
+				}
+			]
+		}
+	}
+}
