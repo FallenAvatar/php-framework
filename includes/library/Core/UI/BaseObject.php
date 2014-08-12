@@ -4,6 +4,8 @@ namespace Core\UI
 {
 	class BaseObject extends \Core\Object
 	{
+		protected $App;
+		
 		protected $Get;
 		protected $Post;
 		protected $Session;
@@ -15,6 +17,8 @@ namespace Core\UI
 		
 		public function __construct()
 		{
+			$this->App = \Core\Application::GetInstance();
+			
 			$this->Get = $_GET;
 			$this->Post = $_POST;
 			$this->Session = $_SESSION;

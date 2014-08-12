@@ -4,27 +4,41 @@ namespace Core\UI
 {
 	class Page extends BaseObject
 	{
-		protected $path;
-		protected $ui_page;
-		protected $Application;
-		protected $Request;
+		protected $AbsolutePath;
+		
+		protected $Layout;
+		
+		protected $Title;
+		public function _getTitle() { return $this->Title; }
+		protected $StyleSheets;
+		public function _getStyleSheets() { return $this->StyleSheets; }
+		protected $JSFiles;
+		public function _getJSFiles() { return $this->JSFiles; }
+		protected $Styles;
+		public function _getStyles() { return $this->Styles; }
+		protected $Options;
+		public function _getOptions() { return $this->Options; }
 
 		public function __construct()
 		{
-			$this->Application = \Core\Application::GetInstance();
-			$this->Request = $this->Application->Request;
-
-			$this->Init();
+			$this->Layout = new Layout('default');
 		}
 
 		public function SetPath($path)
 		{
-			$this->path = $path;
+			$this->AbsolutePath = $path;
+		}
+		
+		protected function SetLayout($name)
+		{
+			if( isset($name) && $name != '' && $name != '_none' )
+				$this->Layout = new Layout('default');
+			else
+				$this->Layout = null;
 		}
 
 		public function Init()
 		{
-			$this->ui_page = new \System\Web\UI\Page();
 			$this->OnInit();
 		}
 
@@ -37,7 +51,7 @@ namespace Core\UI
 		public function Render()
 		{
 			$this->OnPreRender();
-			$this->ui_page->Render($this->path);
+			$this->ui_page->Render($this->AbsolutePath);
 			$this->OnPostRender();
 		}
 

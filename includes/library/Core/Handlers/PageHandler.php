@@ -4,32 +4,34 @@ namespace Core\Handlers
 {
 	class PageHandler extends \Core\Object implements IRequestHandler
 	{
+		protected $path;
+		protected $rel_path;
+		
 		public function CanHandleRequest($App)
 		{
-			$path = $App->Request->Url->Path;
-
-			$rel_path = $path;
+			$this->path = $App->Request->Url->Path;
+			$this->rel_path = $this->path;
 			
-			if( strpos($path, $App->Dirs->WebRoot) === false )
-				$path = substr($App->Dirs->WebRoot,0,strlen($App->Dirs->WebRoot)-1).$path;
+			if( strpos($this->path, $App->Dirs->WebRoot) === false )
+				$this->path = substr($App->Dirs->WebRoot,0,strlen($App->Dirs->WebRoot)-1).$this->path;
 
-			$path = \Core\IO\Path::Combine($App->Dirs->DocumentRoot,$path);
-			if( !is_file($path) )
+			$this->path = \Core\IO\Path::Combine($App->Dirs->DocumentRoot,$this->path);
+			if( !is_file($this->path) )
 			{
-				if( is_dir($path) && is_file(\Core\IO\Path::Combine($path,'index.php')) )
+				if( is_dir($this->path) && is_file(\Core\IO\Path::Combine($this->path,'index.php')) )
 				{
-					$path = \Core\IO\Path::Combine($path,'index.php');
-					$rel_path = \Core\IO\Path::Combine($rel_path,'index.php');
+					$this->path = \Core\IO\Path::Combine($this->path,'index.php');
+					$this->rel_path = \Core\IO\Path::Combine($this->rel_path,'index.php');
 				}
-				else if( is_file($path.'.php') )
+				else if( is_file($this->path.'.php') )
 				{
-					$path = $path.'.php';
-					$rel_path = $rel_path.'.php';
+					$this->path = $this->path.'.php';
+					$this->rel_path = $this->rel_path.'.php';
 				}
-				else if( is_file($path.'.phtml') )
+				else if( is_file($this->path.'.phtml') )
 				{
-					$path = $path.'.phtml';
-					$rel_path = $rel_path.'.phtml';
+					$this->path = $this->path.'.phtml';
+					$this->rel_path = $this->rel_path.'.phtml';
 				}
 				else
 				{
@@ -37,7 +39,7 @@ namespace Core\Handlers
 				}
 			}
 			
-			$ext = substr($rel_path, strrpos($rel_path,'.')+1);
+			$ext = substr($this->rel_path, strrpos($this->rel_path,'.')+1);
 			$exts = array('php','phtml','html');
 
 			if( !in_array($ext,$exts) )
@@ -48,35 +50,8 @@ namespace Core\Handlers
 
 		public function ExecuteRequest($App)
 		{
-			$path = $App->Request->Url->Path;
-
-			$rel_path = $path;
-			
-			if( strpos($path, $App->Dirs->WebRoot) === false )
-				$path = substr($App->Dirs->WebRoot,0,strlen($App->Dirs->WebRoot)-1).$path;
-
-			$path = \Core\IO\Path::Combine($App->Dirs->DocumentRoot,$path);
-			if( !is_file($path) )
-			{
-				if( is_file($path.'.php') )
-				{
-					$path = $path.'.php';
-					$rel_path = $rel_path.'.php';
-				}
-				else if( is_file($path.'.phtml') )
-				{
-					$path = $path.'.phtml';
-					$rel_path = $rel_path.'.phtml';
-				}
-				else
-				{
-					$path = \Core\IO\Path::Combine($path,'index.php');
-					$rel_path = \Core\IO\Path::Combine($rel_path,'index.php');
-				}
-			}
-
-			$rel_path = substr($rel_path, 0, strrpos($rel_path,'.'));
-			$parts = explode('/',$rel_path);
+			$this->rel_path = substr($this->rel_path, 0, strrpos($this->rel_path,'.'));
+			$parts = explode('/',$this->rel_path);
 			$class_name = '\\Site\\Pages';
 
 			foreach($parts as $part)
@@ -95,9 +70,9 @@ namespace Core\Handlers
 				$inst = new \Core\UI\Page();
 
 			if( !($inst instanceof \Core\UI\Page) )
-				throw new \Exception('Page class ['.$class_name.'] found for url ['.$rel_path.'], but it does not entend \Core\UI\Page.');
+				throw new \Exception('Page class ['.$class_name.'] found for url ['.$this->rel_path.'], but it does not entend \Core\UI\Page.');
 
-			$inst->SetPath($path);
+			$inst->SetPath($this->path);
 
 			$this->RunPage($inst);
 		}
