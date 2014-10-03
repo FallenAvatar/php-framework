@@ -1,8 +1,18 @@
 {
-	"Site": {
-	},
 	"API": {
 		"enabled": true
+	},
+	"Database": {
+		"default": {
+			"driver": "MySql",
+			"host": "localhost",
+			"user": "",
+			"pass": "",
+			"db_name": ""
+		}
+	},
+	"Site": {
+		"version": "0.1.0.0"
 	},
 	"Core": {
 		"debug": true
