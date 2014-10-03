@@ -1,0 +1,10 @@
+{
+	"Site": {
+	},
+	"API": {
+		"enabled": true
+	},
+	"Core": {
+		"debug": true
+	}
+}

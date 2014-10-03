@@ -64,13 +64,13 @@ namespace Core\Handlers
 
 			$inst = null;
 
-			if( \Core\Autoloader::IsClassLoaded($class_name) || \Core\Autoloader::CanLoadClass($class_name) )
+			if( \Core\Autoload\StandardAutoloader::IsClassLoaded($class_name) || \Core\Autoload\StandardAutoloader::CanLoadClass($class_name) )
 				$inst = new $class_name();
 			else
-				$inst = new \Core\UI\Page();
+				$inst = new \Core\Web\UI\Page();
 
-			if( !($inst instanceof \Core\UI\Page) )
-				throw new \Exception('Page class ['.$class_name.'] found for url ['.$this->rel_path.'], but it does not entend \Core\UI\Page.');
+			if( !($inst instanceof \Core\Web\UI\Page) )
+				throw new \Exception('Page class ['.$class_name.'] found for url ['.$this->rel_path.'], but it does not entend \Core\Web\UI\Page.');
 
 			$inst->SetPath($this->path);
 

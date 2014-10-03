@@ -1,9 +1,17 @@
 <?
 
-namespace Curl
+namespace Core
 {
 	class Curl extends Object
 	{
+		public static function GetContents($url)
+		{
+			$curl = new Curl($url);
+			$curl->PrepareGet();
+			
+			return $curl->Execute();
+		}
+		
 		protected $handle;
 		protected $url;
 		protected $qs;
@@ -39,7 +47,7 @@ namespace Curl
 		
 		public function PreparePost($data)
 		{
-			if( is_array($data) && Array::IsAssoc($data) )
+			if( is_array($data) && ArrayHelper::IsAssoc($data) )
 			{
 				$parts = array();
 					

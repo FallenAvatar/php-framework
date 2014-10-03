@@ -4,62 +4,68 @@ namespace Core\Handlers
 {
 	class APIHandler extends \Core\Object implements IRequestHandler
 	{
+		protected $path;
+		
 		public function CanHandleRequest($App)
 		{
-			$Config = $App->Config;
-			
-			if( $Config->API->enabled !== true )
+			if( $App->Config->API->enabled !== true )
 				return false;
 			
-			$path = $App->Request->Url->Path;
-			$api_path = $Config->API->base_url;
+			$this->path = $App->Request->Url->Path;
+			$api_path = $App->Config->API->base_url;
 			
-			$path_start = substr($path, 0, strlen($api_path));
+			$path_start = substr($this->path, 0, strlen($api_path));
 			if( $path_start != $api_path )
 				return false;
+				
+			$this->path = substr($this->path, strlen($api_path));
 
 			return true;
 		}
 
 		public function ExecuteRequest($App)
 		{
-			$Config = $App->Config;
-			$path = $App->Request->Url->Path;
-
-			$path = $App->Request->Url->Path;
-			$api_path = $Config->API->base_url;
+			$ret = $this->GetResponse($App);
 			
-			$path = substr($path, strlen($api_path));
+			if( !isset($ret) )
+				$ret = array('error' => true, 'statusCode' => 500, 'message' => 'An unknown error has occured');
 			
-			$pos = strrpos($path,'/');
+			if( isset($ret['statusCode']) )
+			{
+				$txt = '';
+				if( isset(\Core\Application::$HttpErrorCodeText[$ret['statusCode']]) )
+				{
+					$txt = ' '.\Core\Application::$HttpErrorCodeText[$ret['statusCode']];
+					if( !isset($ret['message']) )
+						$ret['message'] = \Core\Application::$HttpErrorCodeText[$ret['statusCode']];
+				}
+				
+				header('HTTP/1.0 '.$ret['statusCode'].$txt);
+			}
+			
+			header('Content-Type: application/json');
+			echo json_encode($ret);
+		}
+		
+		protected function GetResponse($App)
+		{
+			$pos = strrpos($this->path,'/');
 			if( $pos === false )
-			{
-				$App->ErrorPageHandler(404);
-				return;
-			}
+				return array('error' => true, 'statusCode' => 404, 'message' => 'Invalid API Path.');
 			
-			$method = substr($path, $pos+1);
-			$path = substr($path,0,$pos);
+			$method = substr($this->path, $pos+1);
+			$this->path = substr($this->path,0,$pos);
 			
-			if( !isset($method) || trim($method) == '' || !isset($path) || trim($path) == '' )
-			{
-				$App->ErrorPageHandler(404);
-				return;
-			}
+			if( !isset($method) || trim($method) == '' || !isset($this->path) || trim($this->path) == '' )
+				return array('error' => true, 'statusCode' => 404, 'message' => 'Invalid API Path.');
 			
-			$class = $this->FindClass($App, $path);
+			$class = $this->FindClass($App, $this->path);
 			
 			if( $class === false )
-			{
-				$App->ErrorPageHandler(404);
-				return;
-			}
+				return array('error' => true, 'statusCode' => 404, 'message' => 'The requested API class ['.$this->path.'] could not be found.');
 			
 			if( !method_exists($class, $method) )
-			{
-				$App->ErrorPageHandler(404);
-				return;
-			}
+				return array('error' => true, 'statusCode' => 404, 'message' => 'The requested API class does not contain a method ['.$method.'].');
 			
 			$method_info = new \ReflectionMethod($class,$method);
 			$method_info->setAccessible(true);
@@ -67,10 +73,7 @@ namespace Core\Handlers
 			$inst = null;
 
 			if( !$method_info->isStatic() )
-			{
-				$App->ErrorPageHandler(403);
-				return;
-			}
+				$inst = new $class();
 			
 			if( $method_info->isPublic() )
 			{
@@ -80,10 +83,7 @@ namespace Core\Handlers
 				$signature = strtolower($_GET['signature']);
 				
 				if( !isset($signature) || trim($signature) == '' )
-				{
-					$App->ErrorPageHandler(403);
-					return;
-				}
+					return array('error' => true, 'statusCode' => 403, 'message' => 'The requested API method requires a signature to be passed in the query string.');
 
 				$message = '';
 				foreach( $_GET as $name => $value )
@@ -114,19 +114,13 @@ namespace Core\Handlers
 				$hash = hash_hmac('md5', $message, $App->Config->API->auth_key);
 
 				if( $signature != $hash )
-				{
-					$App->ErrorPageHandler(403);
-					return;
-				}
+					return array('error' => true, 'statusCode' => 403, 'message' => 'Invalid signature supplied.');
 			}
 			else if( $method_info->isPrivate() )
 			{
 				$user = \Site\Security::GetUser();
 				if( !isset($user) )
-				{
-					$App->ErrorPageHandler(403);
-					return;
-				}
+					return array('error' => true, 'statusCode' => 403, 'message' => 'No logged in user in the current session.');
 			}
 			
 			$args = $method_info->getParameters();
@@ -158,25 +152,19 @@ namespace Core\Handlers
 					if( !isset($val) )
 					{
 						if( !$arg->isDefaultValueAvailable() )
-						{
-							$App->ErrorPageHandler(501);
-							return;
-						}
+							return array('error' => true, 'statusCode' => 400, 'message' => 'Missing required parameter ['.$name.'].');
 					}
 					else
 						$args_to_pass[] = $val;
 				}
 			}
 			
-			$ret = $method_info->invokeArgs($inst, $args_to_pass);
-			header('Content-Type: application/json');
-			echo json_encode($ret);
+			return $method_info->invokeArgs($inst, $args_to_pass);
 		}
 		
 		protected function FindClass($App, $path)
 		{
-			$Config = $App->Config;
-			$ns = $Config->API->ns;
+			$ns = $App->Config->API->ns;
 			$class = str_replace('/','\\',$path);
 			
 			if( is_object($ns) )

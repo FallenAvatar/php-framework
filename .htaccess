@@ -1,5 +1,3 @@
-# Fix for old Godaddy 3GH (Grid Hosting) - uncomment if getting errors about unexpected slashes in class names
-AddHandler x-httpd-php5-3 .php
 
 DirectoryIndex index.php
 
@@ -7,13 +5,13 @@ RewriteEngine On
 RewriteBase /
 
 # Prevent Infinite Loop
-RewriteRule ^includes/library/base-web.php$ - [L,NC]
+RewriteRule ^includes/library/base.php$ - [L,NC]
 
 # Prevent direct access to includes and config files
 RewriteRule ^includes/(.*)$ 404.html [L,NC]
 
 # Rewrite appropiate URLs to our engine
-RewriteRule ^$ includes/library/base-web.php [L,NC,QSA]
-RewriteRule ^(.*)/$ includes/library/base-web.php [L,NC,QSA]
-RewriteRule ^((.*/)*([^/\.]+))$ includes/library/base-web.php [L,NC,QSA]
-RewriteRule ^(.*)\.(php|phtml|json|html|xml|css)$ includes/library/base-web.php [L,NC,QSA]
+RewriteRule ^$ includes/library/base.php [L,NC,QSA]
+RewriteRule ^(.*)/$ includes/library/base.php [L,NC,QSA]
+RewriteRule ^((.*/)*([^/\.]+))$ includes/library/base.php [L,NC,QSA]
+RewriteRule ^(.*)\.(php|phtml|json|html|xml|css)$ includes/library/base.php [L,NC,QSA]

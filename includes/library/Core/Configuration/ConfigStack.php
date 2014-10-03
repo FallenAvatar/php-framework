@@ -48,8 +48,8 @@ namespace Core\Configuration
 			else if( !isset($two) || !\is_array($two) || empty($two) )
 				return $one;
 			
-			$is_one_assoc = \Core\Array::IsAssoc($one);
-			$is_two_assoc = \Core\Array::IsAssoc($two);
+			$is_one_assoc = \Core\ArrayHelper::IsAssoc($one);
+			$is_two_assoc = \Core\ArrayHelper::IsAssoc($two);
 			
 			if( $is_one_assoc != $is_two_assoc )
 				throw new ConfigurationException('Can not merge an associative array with one that is not.');
@@ -98,7 +98,7 @@ namespace Core\Configuration
 			
 			$ret = array();
 			
-			if( !\System\Array::IsAssoc($arr) )
+			if( !\Core\ArrayHelper::IsAssoc($arr) )
 			{
 				foreach($arr as $v)
 				{
