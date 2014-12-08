@@ -2,6 +2,6 @@
 
 (function($, undefined) {
 $(function () {
-
-	});
+	
+});
 })(jQuery);

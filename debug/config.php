@@ -1,42 +1,44 @@
-<?php
-	$app = \System\Application::GetInstance();
-	if( !isset($app->Config->System->debug) || $app->Config->System->debug !== true )
-		$this->Redirect('/');
-		
-	$this->SetLayout('debug');
+<?
+
+$app = \Core\Application::GetInstance();
+if( !isset($app->Config->Core->debug) || $app->Config->Core->debug !== true )
+	$this->Redirect('/');
 	
-	function PrintDynObject($o, $lvl = 0)
+$this->SetLayout('debug');
+
+function PrintDynObject($o, $lvl = 0)
+{
+	$ret = '';
+	
+	$tabs = str_repeat("\t", $lvl);
+	
+	foreach($o as $name => $value)
 	{
-		$ret = '';
+		$ret .= $tabs . '<b>[' . $name . ']</b> => ';
 		
-		$tabs = str_repeat("\t", $lvl);
-		
-		foreach($o as $name => $value)
+		if( $value instanceof \Core\DynObject )
+			$ret .= "\n" . PrintDynObject($value, $lvl + 1);
+		else if( is_array($value) )
 		{
-			$ret .= $tabs . '<b>[' . $name . ']</b> => ';
+			$tl = $lvl + 1;
+			$ttabs = str_repeat("\t", $tl);
 			
-			if( $value instanceof \System\DynObject )
-				$ret .= "\n" . PrintDynObject($value, $lvl + 1);
-			else if( is_array($value) )
+			$ret .= "\n";
+			
+			foreach( $value as $n => $v )
 			{
-				$tl = $lvl + 1;
-				$ttabs = str_repeat("\t", $tl);
-				
-				$ret .= "\n";
-				
-				foreach( $value as $n => $v )
-				{
-					$ret .= $ttabs . '<b>[' . $n . ']</b> => "' . $v . '"' . "\n";
-				}
+				$ret .= $ttabs . '<b>[' . $n . ']</b> => "' . $v . '"' . "\n";
 			}
-			else if( !isset($value) )
-				$ret .= '<i>null</i>' . "\n";
-			else
-				$ret .= '"' . $value . '"' . "\n";
 		}
-		
-		return $ret;
+		else if( !isset($value) )
+			$ret .= '<i>null</i>' . "\n";
+		else
+			$ret .= '"' . $value . '"' . "\n";
 	}
+	
+	return $ret;
+}
+
 ?>
 <article class="page" id="config-page">
 	<h1>Config</h1>

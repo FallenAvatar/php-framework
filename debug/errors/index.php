@@ -1,11 +1,13 @@
-<?php
-	$app = \System\Application::GetInstance();
-	if( !isset($app->Config->System->debug) || $app->Config->System->debug !== true )
-		$this->Redirect('/');
-		
-	$this->SetLayout('debug');
+<?
+
+$app = \Core\Application::GetInstance();
+if( !isset($app->Config->Core->debug) || $app->Config->Core->debug !== true )
+	$this->Redirect('/');
 	
-	$errors = array();
+$this->SetLayout('debug');
+
+$errors = array();
+	
 ?>
 <article class="page" id="errors-page">
 	<h1>Errors</h1>

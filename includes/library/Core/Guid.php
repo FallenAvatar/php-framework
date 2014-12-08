@@ -1,6 +1,6 @@
 <?
 
-namespace Curl
+namespace Core
 {
 	class Guid extends Object
 	{
