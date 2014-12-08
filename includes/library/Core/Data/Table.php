@@ -1,12 +1,16 @@
 <?
 
-namespace System\Data
+namespace Core\Data
 {
-	abstract class Core extends \Core\Object
+	class Table extends \Core\Object
 	{
-		protected function __construct($tbl)
+		protected $db;
+		protected $tbl;
+		
+		public function __construct($tbl, $conn = null)
 		{
-			
+			$this->db = Database::GetInstance($conn);
+			$this->tbl = $tbl;
 		}
 	}
 }

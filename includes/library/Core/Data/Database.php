@@ -5,14 +5,20 @@ namespace Core\Data
 	abstract class Database extends \Core\Object
 	{
 		const Delim_None = 0;
-		const Delim_Table = 1;
-		const Delim_Column = 2;
-		const Delim_String = 3;
+		const Delim_Database = 1;
+		const Delim_Schema = 2;
+		const Delim_Table = 3;
+		const Delim_Column = 4;
+		const Delim_Parameter = 5;
+		const Delim_String = 6;
 		
 		private static $_insts=array();
-		public static function GetInstance($conn = 'default')
+		public static function GetInstance($conn = null)
 		{
 			$app = \Core\Application::GetInstance();
+			
+			if( !isset($conn) )
+				$conn = $app->Config->Core->Data->defaultConnectionName;
 			
 			if( !isset(self::$_insts[$conn]) )
 			{
@@ -33,7 +39,7 @@ namespace Core\Data
 		
 		protected abstract function Connect($host,$user,$pw,$db);
 		
-		public abstract function ExecuteQuery($sql,$params=array(),$tableClass='');
+		public abstract function ExecuteQuery($sql,$params=array(),$rowClass='');
 		public abstract function ExecuteNonQuery($sql,$params=array());
 		public abstract function ExecuteScalar($sql,$params=array());
 		public abstract function Escape($val,$delim=self::DELIM_NONE);

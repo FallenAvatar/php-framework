@@ -12,18 +12,18 @@ namespace Core\Data\MySql
 			$this->dbh->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 		}
 		
-		public function ExecuteQuery($sql,$params=array(),$tableClass='')
+		public function ExecuteQuery($sql,$params=array(),$rowClass='')
 		{
 			$sth = $this->dbh->prepare($sql);
 			$sth->execute($params);
 			$rows = $sth->fetchAll(\PDO::FETCH_ASSOC);
 			
-			if( !isset($tableClass) || trim($tableClass) == '' )
+			if( !isset($rowClass) || trim($rowClass) == '' )
 				return $rows;
 				
 			$ret = array();
 			foreach($rows as $row)
-				$ret[] = new $tableClass($row);
+				$ret[] = new $rowClass($row);
 				
 			return $ret;
 		}
@@ -60,10 +60,13 @@ namespace Core\Data\MySql
 		{
 			switch($delim)
 			{
+				case parent::Delim_Database:
+				case parent::Delim_Schema:
 				case parent::Delim_Table:
-					return '`'.$val.'`';
 				case parent::Delim_Column:
 					return '`'.$val.'`';
+				case parent::Delim_Parameter:
+					return ':'.$val;
 				case parent::Delim_String:
 					return "'".$val."'";
 			}
