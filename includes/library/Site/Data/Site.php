@@ -2,11 +2,11 @@
 
 namespace Site\Data
 {
-class Site extends \System\Data\ActiveRecord
+class Site extends \Core\Data\ActiveRecord
 {
 	public static function FindByDomain($domain)
 	{
-		$db = \System\Data\Database::GetInstance();
+		$db = \Core\Data\Database::Get();
 		$sql = "SELECT * FROM `sites` WHERE `domain` = :d";
 		
 		$rows = $db->ExecuteQuery($sql, array('d' => $domain), '\Site\Data\Site');

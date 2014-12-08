@@ -17,7 +17,7 @@ namespace Core\Data\Statement
 		
 		public function Execute($condVars=array())
 		{
-			$db=\Core\Data\Database::GetInstance();
+			$db=\Core\Data\Database::Get();
 			
 			$sql="DELETE FROM ".$db->Delim($this->_tbl,\Core\Data\Database::Delim_Table);
 			

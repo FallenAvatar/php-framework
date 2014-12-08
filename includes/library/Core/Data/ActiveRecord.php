@@ -52,7 +52,7 @@ namespace Core\Data
 		
 		protected function Load($id)
 		{
-			$db = Database::GetInstance();
+			$db = Database::Get();
 			$sql = '';
 
 			if( is_array($this->prikeycol) )
@@ -111,7 +111,7 @@ namespace Core\Data
 		
 		public function Save()
 		{
-			$db = Database::GetInstance();
+			$db = Database::Get();
 			if($this->loaded)
 			{
 				$where = '';
@@ -175,7 +175,7 @@ namespace Core\Data
 
 		public function Delete()
 		{
-			$db = Database::GetInstance();
+			$db = Database::Get();
 			if(!$this->loaded)
 				return;
 
