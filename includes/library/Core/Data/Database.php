@@ -30,20 +30,66 @@ namespace Core\Data
 			return self::$_insts[$conn];
 		}
 		
+		protected $db_name;
+		public function _getDBName() { return $this->db_name; }
 		protected $dbh;
 		
-		public function __construct($creds)
+		public function __construct($name, $creds)
 		{
+			$this->db_name = $name;
 			$this->Connect($creds->host,$creds->user,$creds->pass,$creds->db_name);
+			
+			$this->dbh->setAttribute(\PDO::ATTR_EMULATE_PREPARES, TRUE);
+			$this->dbh->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 		}
 		
 		protected abstract function Connect($host,$user,$pw,$db);
-		
-		public abstract function ExecuteQuery($sql,$params=array(),$rowClass='');
-		public abstract function ExecuteNonQuery($sql,$params=array());
-		public abstract function ExecuteScalar($sql,$params=array());
-		public abstract function Escape($val,$delim=self::DELIM_NONE);
 		public abstract function Delim($val,$delim);
-		public abstract function LastInsertId();
+		
+		public function DelimDatabase($val) { return $this->Delim($val, Delim_Database); }
+		public function DelimSchema($val) { return $this->Delim($val, Delim_Schema); }
+		public function DelimTable($val) { return $this->Delim($val, Delim_Table); }
+		public function DelimColumn($val) { return $this->Delim($val, Delim_Column); }
+		public function DelimParameter($val) { return $this->Delim($val, Delim_Parameter); }
+		public function DelimString($val) { return $this->Delim($val, Delim_String); }
+		
+		public function ExecuteQuery($sql,$params=array(),$rowClass=null)
+		{
+			$sth = $this->dbh->prepare($sql);
+			$sth->execute($params);
+			$rows = $sth->fetchAll(\PDO::FETCH_ASSOC);
+			
+			if( !isset($tableClass) || trim($tableClass) == '' )
+				return $rows;
+				
+			$ret = array();
+			foreach($rows as $row)
+				$ret[] = new $tableClass($row);
+				
+			return $ret;
+		}
+		
+		public function ExecuteNonQuery($sql,$params=array())
+		{
+			$sth = $this->dbh->prepare($sql);
+			$sth->execute($params);
+			return $sth->rowCount();
+		}
+		
+		public function ExecuteScalar($sql,$params=array())
+		{
+			$sth = $this->dbh->prepare($sql);
+			$sth->execute($params);
+			$ret = $sth->fetch(\PDO::FETCH_NUM);
+			if( $ret !== FALSE )
+				return $ret[0];
+				
+			return NULL;
+		}
+		
+		public function LastInsertId()
+		{
+			return $this->dbh->lastInsertId();
+		}
 	}
 }

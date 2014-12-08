@@ -8,52 +8,6 @@ namespace Core\Data\MySql
 		{
 			$dsn = 'mysql:host='.$host.';port=3306;dbname='.$db;
 			$this->dbh = new \PDO($dsn,$user,$pw);
-			$this->dbh->setAttribute(\PDO::ATTR_EMULATE_PREPARES, TRUE);
-			$this->dbh->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-		}
-		
-		public function ExecuteQuery($sql,$params=array(),$rowClass='')
-		{
-			$sth = $this->dbh->prepare($sql);
-			$sth->execute($params);
-			$rows = $sth->fetchAll(\PDO::FETCH_ASSOC);
-			
-			if( !isset($rowClass) || trim($rowClass) == '' )
-				return $rows;
-				
-			$ret = array();
-			foreach($rows as $row)
-				$ret[] = new $rowClass($row);
-				
-			return $ret;
-		}
-		
-		public function ExecuteNonQuery($sql,$params=array())
-		{
-			$sth = $this->dbh->prepare($sql);
-			$sth->execute($params);
-			return $sth->rowCount();
-		}
-		
-		public function ExecuteScalar($sql,$params=array())
-		{
-			$sth = $this->dbh->prepare($sql);
-			$sth->execute($params);
-			$ret = $sth->fetch(\PDO::FETCH_NUM);
-			if( $ret !== FALSE )
-				return $ret[0];
-				
-			return NULL;
-		}
-		
-		public function Escape($val,$delim=parent::Delim_None)
-		{
-			$ret = $this->dbh->quote($val);
-			
-			if( $delim != parent::Delim_None )
-				$ret = $this->Delim($ret);
-				
-			return $ret;
 		}
 		
 		public function Delim($val,$delim)
@@ -72,11 +26,6 @@ namespace Core\Data\MySql
 			}
 			
 			return $val;
-		}
-		
-		public function LastInsertId()
-		{
-			return $this->dbh->lastInsertId();
 		}
 	}
 }

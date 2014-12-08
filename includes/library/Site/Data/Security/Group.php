@@ -2,11 +2,11 @@
 
 namespace Site\Data\Security
 {
-	class Group extends \System\Data\ActiveRecord
+	class Group extends \Core\Data\ActiveRecord
 	{
 		public static function FindAll($show_hidden = false)
 		{
-			$db = \System\Data\Database::GetInstance();
+			$db = \Core\Data\Database::Get();
 			$sql = "SELECT * FROM `security_groups`";
 			
 			if( !$show_hidden )
@@ -17,7 +17,7 @@ namespace Site\Data\Security
 		
 		public static function FindByName($name)
 		{
-			$db = \System\Data\Database::GetInstance();
+			$db = \Core\Data\Database::Get();
 			$sql = "SELECT * FROM `security_groups` WHERE `name` = :name";
 			
 			$rows = $db->ExecuteQuery($sql, array('name' => $name), '\Site\Data\Security\Group');

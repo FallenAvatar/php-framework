@@ -2,11 +2,11 @@
 
 namespace Site\Data\Security
 {
-	class Role extends \System\Data\ActiveRecord
+	class Role extends \Core\Data\ActiveRecord
 	{
 		public static function FindAll()
 		{
-			$db = \System\Data\Database::GetInstance();
+			$db = \Core\Data\Database::Get();
 			$sql = "SELECT * FROM `security_roles`";
 
 			return $db->ExecuteQuery($sql, array(), '\Site\Data\Security\Role');
@@ -14,7 +14,7 @@ namespace Site\Data\Security
 		
 		public static function FindByName($name)
 		{
-			$db = \System\Data\Database::GetInstance();
+			$db = \Core\Data\Database::Get();
 			$sql = "SELECT * FROM `security_roles` WHERE `name` = :name";
 			
 			$rows = $db->ExecuteQuery($sql, array('name' => $name), '\Site\Data\Security\Role');

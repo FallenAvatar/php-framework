@@ -20,9 +20,9 @@ namespace Core\Data\Statement
 		
 		public function Execute()
 		{
-			$db=\Core\Data\Database::GetInstance();
+			$db=\Core\Data\Database::Get();
 			
-			$sql="INSERT INTO ".$db->Delim($this->tbl,\Core\Data\Database::Delim_Table)."(";
+			$sql="INSERT INTO ".$db->DelimTable($this->tbl)."(";
 			$sql2=") VALUES (";
 			$params=array();
 			
@@ -34,7 +34,7 @@ namespace Core\Data\Statement
 					$sql.=", ";
 					$sql2.=", ";
 				}
-				$sql.=$db->Delim($col,\Core\Data\Database::Delim_Column);
+				$sql.=$db->DelimColumn($col);
 				$colClean=preg_replace('/\s+/','_',preg_replace('/[^a-zA-Z0-9]*/','',$col));
 				$sql2.=':'.$colClean;
 				$params[$colClean] = $val;
