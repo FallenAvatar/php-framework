@@ -52,31 +52,31 @@ namespace Core\UI
 			header($name.': '.$value);
 		}
 		
-		// Helper Functions
-		public function GetMethod()
+		// Helper Properties
+		public function _getRequestMethod()
 		{
 			global $_SERVER;
 			return strtoupper($_SERVER['REQUEST_METHOD']);
 		}
 	
-		public function IsPost()
+		public function _getIsPost()
 		{
-			return ($this->GetMethod() == 'POST');
+			return ($this->RequestMethod == 'POST');
 		}
 
-		public function IsGet()
+		public function _getIsGet()
 		{
-			return ($this->GetMethod() == 'GET');
+			return ($this->RequestMethod == 'GET');
 		}
 
-		public function IsPut()
+		public function _getIsPut()
 		{
-			return ($this->GetMethod() == 'PUT');
+			return ($this->RequestMethod == 'PUT');
 		}
 
-		public function IsDelete()
+		public function _getIsDelete()
 		{
-			return ($this->GetMethod() == 'DELETE');
+			return ($this->RequestMethod == 'DELETE');
 		}
 		
 		public function Redirect($url)

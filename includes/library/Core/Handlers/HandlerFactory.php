@@ -7,7 +7,7 @@ namespace Core\Handlers
 		public static function ProcessRequest()
 		{
 			$app = \Core\Application::GetInstance();
-			$handler_classes = $app->Config->Core->Web->handlers;
+			$handler_classes = $app->Config->Core->handlers;
 
 			$found = false;
 
