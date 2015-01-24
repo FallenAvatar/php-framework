@@ -70,7 +70,7 @@ namespace Core\Handlers
 				$inst = new \Core\UI\Page();
 
 			if( !($inst instanceof \Core\UI\Page) )
-				throw new \Exception('Page class ['.$class_name.'] found for url ['.$this->rel_path.'], but it does not entend \Core\UI\Page.');
+				throw new \Exception('Page class ['.$class_name.'] found for url ['.$this->rel_path.'], but it does not extend \Core\UI\Page.');
 
 			$inst->SetPath($this->path);
 
