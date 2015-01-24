@@ -4,6 +4,50 @@ namespace Core
 {
 	class Application extends Object
 	{
+		public static $HttpErrorCodeText = array(
+			100 => "Continue",
+			101 => "Switching Protocols",
+			200 => "OK",
+			201 => "Created",
+			202 => "Accepted",
+			203 => "Non-Authoritative Information",
+			204 => "No Content",
+			205 => "Reset Content",
+			206 => "Partial Content",
+			300 => "Multiple Choices",
+			301 => "Moved Permanently",
+			302 => "Found",
+			303 => "See Other",
+			304 => "Not Modified",
+			305 => "Use Proxy",
+			306 => "(Unused)",
+			307 => "Temporary Redirect",
+			400 => "Bad Request",
+			401 => "Unauthorized",
+			402 => "Payment Required",
+			403 => "Forbidden",
+			404 => "Not Found",
+			405 => "Method Not Allowed",
+			406 => "Not Acceptable",
+			407 => "Proxy Authentication Required",
+			408 => "Request Timeout",
+			409 => "Conflict",
+			410 => "Gone",
+			411 => "Length Required",
+			412 => "Precondition Failed",
+			413 => "Request Entity Too Large",
+			414 => "Request-URI Too Long",
+			415 => "Unsupported Media Type",
+			416 => "Requested Range Not Satisfiable",
+			417 => "Expectation Failed",
+			500 => "Internal Server Error",
+			501 => "Not Implemented",
+			502 => "Bad Gateway",
+			503 => "Service Unavailable",
+			504 => "Gateway Timeout",
+			505 => "HTTP Version Not Supported"
+		);
+
 		protected static $s_inst = null;
 		
 		public static function GetInstance()
@@ -14,7 +58,7 @@ namespace Core
 		public static function Run()
 		{
 			$class = '';
-			if( \Core\Autoloader::CanLoadClass("\\Site\\Application") )
+			if( \Core\Autoload\StandardAutoloader::CanLoadClass("\\Site\\Application") )
 				$class = "\\Site\\Application";
 			else
 				$class = "\\Core\\Application";
@@ -38,9 +82,6 @@ namespace Core
 		
 		protected $Request;
 		public function _getRequest() { return $this->Request; }
-		
-		protected $Response;
-		public function _getResponse() { return $this->Response; }
 		
 		protected function __construct()
 		{
@@ -113,7 +154,7 @@ namespace Core
 </head>
 <body>
 	<h1>Error</h1>
-	<? if( $this->Config->Core->debug ) { ?>
+	<? if( !$this->Config->Core->debug ) { ?>
 	An error has occured.
 	<? } else { ?>
 	<h2><?=$ex->getMessage()?></h2>
@@ -131,52 +172,9 @@ namespace Core
 		{
 			$path = $this->Request->Url->Path;
 			
-			$codes = array();
-			$codes[100] = "Continue";
-			$codes[101] = "Switching Protocols";
-			$codes[200] = "OK";
-			$codes[201] = "Created";
-			$codes[202] = "Accepted";
-			$codes[203] = "Non-Authoritative Information";
-			$codes[204] = "No Content";
-			$codes[205] = "Reset Content";
-			$codes[206] = "Partial Content";
-			$codes[300] = "Multiple Choices";
-			$codes[301] = "Moved Permanently";
-			$codes[302] = "Found";
-			$codes[303] = "See Other";
-			$codes[304] = "Not Modified";
-			$codes[305] = "Use Proxy";
-			$codes[306] = "(Unused)";
-			$codes[307] = "Temporary Redirect";
-			$codes[400] = "Bad Request";
-			$codes[401] = "Unauthorized";
-			$codes[402] = "Payment Required";
-			$codes[403] = "Forbidden";
-			$codes[404] = "Not Found";
-			$codes[405] = "Method Not Allowed";
-			$codes[406] = "Not Acceptable";
-			$codes[407] = "Proxy Authentication Required";
-			$codes[408] = "Request Timeout";
-			$codes[409] = "Conflict";
-			$codes[410] = "Gone";
-			$codes[411] = "Length Required";
-			$codes[412] = "Precondition Failed";
-			$codes[413] = "Request Entity Too Large";
-			$codes[414] = "Request-URI Too Long";
-			$codes[415] = "Unsupported Media Type";
-			$codes[416] = "Requested Range Not Satisfiable";
-			$codes[417] = "Expectation Failed";
-			$codes[500] = "Internal Server Error";
-			$codes[501] = "Not Implemented";
-			$codes[502] = "Bad Gateway";
-			$codes[503] = "Service Unavailable";
-			$codes[504] = "Gateway Timeout";
-			$codes[505] = "HTTP Version Not Supported";
-			
 			$txt = '';
-			if( isset($codes[$errorCode]) )
-				$txt = ' '.$codes[$errorCode];
+			if( isset(self::$HttpErrorCodeText[$errorCode]) )
+				$txt = ' '.self::$HttpErrorCodeText[$errorCode];
 			
 			header('HTTP/1.0 '.$errorCode.$txt);
 			
@@ -213,8 +211,7 @@ namespace Core
 			$this->_loadConfig();
 			$this->_fixPhp();
 
-			$this->Request = new \Core\Web\HttpRequest();
-			$this->Response = new \Core\Web\HttpResponse();
+			$this->Request = new \Core\Web\Request();
 		}
 
 		protected function _loadConfig()
@@ -276,7 +273,7 @@ namespace Core
 		{
 			session_start();
 
-			\Core\Web\HandlerFactory::ProcessRequest();
+			\Core\Handlers\HandlerFactory::ProcessRequest();
 		}
 	}
 }

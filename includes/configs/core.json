@@ -82,8 +82,22 @@
 				}
 			]
 		},
-		"UI": {
-			"default_layout": "default"
+		"Web": {
+			"handlers": [
+				{
+					"action": "add",
+					"name": "api-handler",
+					"value": "\\Core\\Handlers\\APIHandler"
+				},
+				{
+					"action": "add",
+					"name": "page-handler",
+					"value": "\\Core\\Handlers\\PageHandler"
+				}
+			]
 		}
+	},
+	"Site": {
+		"base_url": ""
 	}
 }

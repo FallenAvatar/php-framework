@@ -1,8 +1,8 @@
-<?
+<?php
 
-namespace Core\Configuration
+namespace System\Configuration
 {
-	class ConfigStack extends \Core\Object
+	class ConfigStack extends \System\Object
 	{
 		protected $configs;
 		
@@ -18,7 +18,7 @@ namespace Core\Configuration
 		{
 			foreach( $files as $file )
 			{
-				$json = \file_get_contents($file);
+				$json = \System\IO\File::ReadAllText($file);
 				$json_arr = \json_decode($json, true);
 				$this->configs[] = $json_arr;
 			}
@@ -48,8 +48,8 @@ namespace Core\Configuration
 			else if( !isset($two) || !\is_array($two) || empty($two) )
 				return $one;
 			
-			$is_one_assoc = \Core\ArrayHelper::IsAssoc($one);
-			$is_two_assoc = \Core\ArrayHelper::IsAssoc($two);
+			$is_one_assoc = \System\ArrayObject::IsAssoc($one);
+			$is_two_assoc = \System\ArrayObject::IsAssoc($two);
 			
 			if( $is_one_assoc != $is_two_assoc )
 				throw new ConfigurationException('Can not merge an associative array with one that is not.');
@@ -98,7 +98,7 @@ namespace Core\Configuration
 			
 			$ret = array();
 			
-			if( !\Core\ArrayHelper::IsAssoc($arr) )
+			if( !\System\ArrayObject::IsAssoc($arr) )
 			{
 				foreach($arr as $v)
 				{

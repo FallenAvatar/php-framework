@@ -27,7 +27,7 @@ namespace Core
 		{
 			$v = $this->aValues[$this->iCurrent];
 			
-			if( is_array($v) && Array::IsAssoc($v) )
+			if( is_array($v) && ArrayHelper::IsAssoc($v) )
 				$v = new DynObject($v, true, false);
 			
 			return $v;

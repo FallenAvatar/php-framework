@@ -4,9 +4,9 @@ namespace Core
 {
 	class DynObject extends Object implements \IteratorAggregate
 	{
-		private $arrInternal;
-		private $bReadOnly;
-		private $bNewProps;
+		protected $arrInternal;
+		protected $bReadOnly;
+		protected $bNewProps;
 
 		public function IsReadOnly() { return $this->bReadOnly; }
 
@@ -20,9 +20,11 @@ namespace Core
 		public function __get($name)
 		{
 			$ret = $this->arrInternal[$name];
-			if( !isset($ret))
+			if( !isset($ret) )
+			{
 				throw new Exception('Property ['.$name.'] not found on Dynamic Object.');
-			else if( is_array( $ret ) && Array::IsAssoc($ret) )
+			}
+			else if( is_array( $ret ) && ArrayHelper::IsAssoc($ret) )
 			{
 				return new DynObject($ret);
 			}
@@ -35,7 +37,7 @@ namespace Core
 			if( $this->bReadOnly )
 				throw new \Exception('This object is Read Only!');
 
-			if( is_array($value) && Array::IsAssoc($value) )
+			if( is_array($value) && ArrayHelper::IsAssoc($value) )
 				$value = new DynObject($value);
 
 			if( !isset($this->arrInternal[$name]) && !$this->bNewProps )
