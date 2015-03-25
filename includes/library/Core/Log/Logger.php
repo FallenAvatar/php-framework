@@ -1,17 +1,34 @@
 <?
 
-namespace Core\Log\Handler
+namespace Core\Log
 {
-	abstract class BaseHandler implements IHandler
+	class Logger
 	{
-		public abstract function Log($level, $message, $source, $details = null);
+		protected $storages;
+		protected $levels;
 		
-		protected function FormatSource($source_array)
+		public function __construct($storages, $levels = -1)
 		{
-			if( !is_array($source_array) )
-				return $source_array;
+			if( is_array($storages) && count($storages) > 0 )
+				$this->storages = $storages;
+			else if( $storages instanceof \Core\Log\Storage\IStorage )
+				$this->storages = array($storages);
+			else
+				$this->storages = array();
+				
+			if( $levels <= 0 )
+				$this->levels = LEVEL_DEBUG | LEVEL_INFO | LEVEL_WARN | LEVEL_ERROR
+			else
+				$this->levels = $levels;
+		}
+		
+		public function Log($level, $message, $source, $details = null)
+		{
+			if( ($level & $this->levels) == 0 )
+				return;
 			
-			return $source_array['class'].$source_array['type'].$source_array['function'].' ('.$source_array['file'].':'.$source_array['line'].')'
+			foreach($this->storages as $s)
+				$s->Log($level, $message, $source, $details);
 		}
 		
 		private function getSourceInfo($depth = 2)

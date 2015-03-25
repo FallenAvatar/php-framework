@@ -2,7 +2,7 @@
 
 namespace Core\Log\Storage
 {
-	class Database implements IStorage
+	class Database extends BaseStorage implements IStorage
 	{
 	}
 }

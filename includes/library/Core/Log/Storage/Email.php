@@ -2,7 +2,8 @@
 
 namespace Core\Log\Storage
 {
-	class Email implements IStorage
+	class Email extends BaseStorage implements IStorage
 	{
+	
 	}
 }

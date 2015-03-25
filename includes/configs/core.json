@@ -29,36 +29,24 @@
 		},
 		"Logging": {
 			"enabled": true,
-			"handlers": [
-				{
-					"action": "add",
-					"name": "db",
-					"value": {
-						"enabled": false,
-						"connection": "default",
-						"table": "logs",
-						"mask": 31
-					}
+			"loggers": {
+				"db": {
+					"enabled": false,
+					"connection": false,
+					"table": "logs",
+					"level": 15
 				},
-				{
-					"action": "add",
-					"name": "email",
-					"value": {
-						"enabled": false,
-						"to": "",
-						"mask": 24
-					}
+				"email": {
+					"enabled": false,
+					"to": "",
+					"level": 8
 				},
-				{
-					"action": "add",
-					"name": "file",
-					"value": {
-						"enabled": false,
-						"folder": "logs",
-						"mask": 28
-					}
+				"file": {
+					"enabled": true,
+					"folder": "logs",
+					"level": 12
 				}
-			]
+			}
 		},
 		"Web": {
 			"handlers": [
