@@ -2,7 +2,7 @@
 
 namespace Core\Log\Handler
 {
-	class Error implements IStorage
+	class Error extends BaseHandler implements IHandler
 	{
 	}
 }
