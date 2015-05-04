@@ -66,6 +66,11 @@ namespace Core\Handlers
 
 			if( \Core\Autoload\StandardAutoloader::IsClassLoaded($class_name) || \Core\Autoload\StandardAutoloader::CanLoadClass($class_name) )
 				$inst = new $class_name();
+			else if( \Core\Autoload\StandardAutoloader::IsClassLoaded('\Site\Page') || \Core\Autoload\StandardAutoloader::CanLoadClass('\Site\Page') )
+			{
+				$class_name = '\Site\Page';
+				$inst = new \Site\Page();
+			}
 			else
 				$inst = new \Core\Web\UI\Page();
 
