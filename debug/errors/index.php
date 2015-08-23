@@ -1,4 +1,4 @@
-<?
+<?php
 
 $app = \Core\Application::GetInstance();
 if( !isset($app->Config->Core->debug) || $app->Config->Core->debug !== true )
@@ -20,21 +20,21 @@ $errors = array();
 			</tr>
 		</thead>
 		<tbody>
-		<? if( count($errors) > 0 ) { ?>
-			<? foreach( $errors as $err ) {?>
+		<?php if( count($errors) > 0 ) { ?>
+			<?php foreach( $errors as $err ) {?>
 			<tr>
 				<td><a href="view?id=<?=$err['id']?>" class="button">View</a></td>
 				<td><?=$err['message']?></td>
 				<td><?=$err['dt']?></td>
 			</tr>
-			<? } ?>
-		<? } else { ?>
+			<?php } ?>
+		<?php } else { ?>
 			<tr>
 				<td colspan="3" class="table-empty">
 					No errors at this time, yay!
 				</td>
 			</tr>
-		<? } ?>
+		<?php } ?>
 		</tbody>
 		<tfoot>
 		</tfoot>

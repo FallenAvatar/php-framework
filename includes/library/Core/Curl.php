@@ -1,4 +1,4 @@
-<?
+<?php
 
 namespace Core
 {
@@ -22,7 +22,7 @@ namespace Core
 		
 		public function __construct($url,$cookie_mod = '')
 		{
-			$this->handle = curl_init();
+			$this->handle = \curl_init();
 			$this->url = $url;
 			$this->qs = array();
 			$this->options = array();
@@ -114,13 +114,13 @@ namespace Core
 			if( count($this->headers) > 0 )
 				$this->options[CURLOPT_HEADER] = $this->headers;
 			
-			curl_setopt_array($this->handle, ($this->options + $defaults)); 
-			$ret = curl_exec($this->handle);
+			\curl_setopt_array($this->handle, ($this->options + $defaults)); 
+			$ret = \curl_exec($this->handle);
 			
 			if( !$ret )
-				$this->error = curl_error($this->handle);
+				$this->error = \curl_error($this->handle);
 			
-			curl_close($this->handle);
+			\curl_close($this->handle);
 			
 			return $ret;
 		}

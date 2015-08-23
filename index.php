@@ -1,4 +1,4 @@
-<?
+<?php
 
 $this->AddStyle('.testing td, .testing th', array(
 	'padding' => '0 5px'

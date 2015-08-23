@@ -1,4 +1,4 @@
-<?
+<?php
 
 $app = \Core\Application::GetInstance();
 if( !isset($app->Config->Core->debug) || $app->Config->Core->debug !== true )

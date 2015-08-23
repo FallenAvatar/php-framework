@@ -1,4 +1,4 @@
-<?
+<?php
 
 namespace Core\Log
 {
@@ -9,14 +9,13 @@ namespace Core\Log
 	
 	class Manager
 	{
-		private static $wrapper = null;
+		private static $logger = null;
 		
 		public static function Init()
 		{
-			if( self::$wrapper != null )
+			if( self::$logger != null )
 				return;
-				
-			self::$wrapper = new Wrapper();
+
 			$app = \Core\Application::GetInstance();
 			$config = $app->Config->Core->Logging;
 			
@@ -29,6 +28,7 @@ namespace Core\Log
 				'file' => '\Core\Log\Storage\File'
 			);
 			
+			$storages = array();
 			foreach( $config->loggers as $name => $settings )
 			{
 				if( !$settings->enabled )
@@ -40,16 +40,18 @@ namespace Core\Log
 				$class_name = $class_map[$name];
 				$inst = new $class_name($settings);
 				
-				self::$wrapper->AddLogger($inst);
+				$storages[] = $inst;
 			}
+			
+			self::$logger = new Logger($storages);
 		}
 		
-		public static function GetLogger()
+		public static function Get()
 		{
-			if( self::$wrapper == null )
+			if( self::$logger == null )
 				self::Init();
 				
-			return self::$wrapper;
+			return self::$logger;
 		}
 	}
 }

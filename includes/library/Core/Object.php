@@ -1,10 +1,10 @@
-<?
+<?php
 
 namespace Core
 {
 	class Object
 	{
-		public function __get(string $name)
+		public function __get($name)
 		{
 			$method_name = '_get'.$name;
 			if( method_exists($this, $method_name) )
@@ -13,7 +13,7 @@ namespace Core
 			throw new Exception('Property ['.$name.'] not found on object.');
 		}
 		
-		public function __set(string $name, $value)
+		public function __set($name, $value)
 		{
 			$method_name = '_set'.$name;
 			if( method_exists($this, $method_name) )
@@ -22,7 +22,7 @@ namespace Core
 			throw new Exception('Property ['.$name.'] not found on type ['.get_class($this).'].');
 		}
 		
-		public function __call(string $name, array $args)
+		public function __call($name, array $args)
 		{
 			if( !method_exists($this, $name.'0') )
 				throw new Exception('Method ['.$name.'] not found on type ['.get_class($this).'].');
@@ -52,7 +52,7 @@ namespace Core
 			return $method->invokeArgs($this, $args);
 		}
 		
-		public static function __callStatic(string $name, array $args)
+		public static function __callStatic($name, array $args)
 		{
 		}
 		

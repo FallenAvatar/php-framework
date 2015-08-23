@@ -1,13 +1,12 @@
-<?
+<?php
 
 namespace Core\Log
 {
 	class Logger
 	{
 		protected $storages;
-		protected $levels;
 		
-		public function __construct($storages, $levels = -1)
+		public function __construct($storages)
 		{
 			if( is_array($storages) && count($storages) > 0 )
 				$this->storages = $storages;
@@ -15,17 +14,12 @@ namespace Core\Log
 				$this->storages = array($storages);
 			else
 				$this->storages = array();
-				
-			if( $levels <= 0 )
-				$this->levels = LEVEL_DEBUG | LEVEL_INFO | LEVEL_WARN | LEVEL_ERROR
-			else
-				$this->levels = $levels;
 		}
 		
-		public function Log($level, $message, $source, $details = null)
+		public function Log($level, $message, $source = null, $details = null)
 		{
-			if( ($level & $this->levels) == 0 )
-				return;
+			if( !isset($source) )
+				$source = $this->getSourceInfo();
 			
 			foreach($this->storages as $s)
 				$s->Log($level, $message, $source, $details);
@@ -40,32 +34,33 @@ namespace Core\Log
 				'line' => $bt[$depth-1]['line'],
 				'class' => $bt[$depth-1]['class'],
 				'function' => $bt[$depth-1]['function'],
-				'type' => $bt[$depth-1]['type']
+				'type' => $bt[$depth-1]['type'],
+				'args' => $bt[$depth-1]['args']
 			);
 		}
 		
-		public function Debug($message, $details)
+		public function Debug($message, $details = null)
 		{
 			$source = $this->getSourceInfo();
 			
 			$this->Log(\Core\Log\LEVEL_DEBUG, $message, $source, $details);
 		}
 		
-		public function Info($message, $details)
+		public function Info($message, $details = null)
 		{
 			$source = $this->getSourceInfo();
 			
 			$this->Log(\Core\Log\LEVEL_INFO, $message, $source, $details);
 		}
 		
-		public function Warn($message, $details)
+		public function Warn($message, $details = null)
 		{
 			$source = $this->getSourceInfo();
 			
 			$this->Log(\Core\Log\LEVEL_WARN, $message, $source, $details);
 		}
 		
-		public function Error($message, $details)
+		public function Error($message, $details = null)
 		{
 			$source = $this->getSourceInfo();
 			

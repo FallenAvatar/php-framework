@@ -1,4 +1,4 @@
-<?
+<?php
 
 namespace Core
 {
@@ -83,8 +83,7 @@ namespace Core
 		protected $Request;
 		public function _getRequest() { return $this->Request; }
 		
-		protected function __construct()
-		{
+		protected function __construct() {
 			$this->Dirs = new DynObject(array(), false, true);
 			
 			$this->BuildDirs();
@@ -93,10 +92,11 @@ namespace Core
 		protected function BuildDirs()
 		{
 			$this->AddDir('Root', $this->GetRootDir());
-			$this->AddDir('Library', $this->Dirs->Root.'includes'.DS.'library'.DS);
-			$this->AddDir('Configs', $this->Dirs->Root.'includes'.DS.'configs'.DS);
-			$this->AddDir('Layouts', $this->Dirs->Root.'includes'.DS.'layouts'.DS);
-			$this->AddDir('Data', $this->Dirs->Root.'includes'.DS.'data'.DS);
+			$this->AddDir('Includes', $this->Dirs->Root.'includes'.DS);
+			$this->AddDir('Library', $this->Dirs->Includes.'library'.DS);
+			$this->AddDir('Configs', $this->Dirs->Includes.'configs'.DS);
+			$this->AddDir('Layouts', $this->Dirs->Includes.'layouts'.DS);
+			$this->AddDir('Data', $this->Dirs->Includes.'data'.DS);
 			$this->AddDir('Cache', $this->Dirs->Data.'cache'.DS);
 			$this->AddDir('DocumentRoot', realpath(((isset($_SERVER['SUBDOMAIN_DOCUMENT_ROOT'])) ? $_SERVER['SUBDOMAIN_DOCUMENT_ROOT'] : $_SERVER['DOCUMENT_ROOT'])));
 			$this->AddDir('WebRoot', str_replace($this->Dirs->DocumentRoot, '', $this->Dirs->Root));
@@ -122,11 +122,11 @@ namespace Core
 			{
 				// from http://www.php.net/manual/en/language.oop5.typehinting.php#111411
 				// order this according to what your app uses most
-				$typehint = strpos($ErrMessage, 'must be an instance of string, string')
-							|| strpos($ErrMessage, 'must be an instance of integer, integer')
-							|| strpos($ErrMessage, 'must be an instance of float, double')
-							|| strpos($ErrMessage, 'must be an instance of boolean, boolean')
-							|| strpos($ErrMessage, 'must be an instance of resource, resource');
+				$typehint = strpos($errstr, 'must be an instance of string, string')
+							|| strpos($errstr, 'must be an instance of integer, integer')
+							|| strpos($errstr, 'must be an instance of float, double')
+							|| strpos($errstr, 'must be an instance of boolean, boolean')
+							|| strpos($errstr, 'must be an instance of resource, resource');
 							
 				if( $typehint )
 					return true;
@@ -154,17 +154,22 @@ namespace Core
 </head>
 <body>
 	<h1>Error</h1>
-	<? if( !$this->Config->Core->debug ) { ?>
+	<?php if( !$this->Config->Core->debug ) { ?>
 	An error has occured.
-	<? } else { ?>
+	<?php } else { ?>
 	<h2><?=$ex->getMessage()?></h2>
 	At <?=$ex->getFile()?> on line [<?=$ex->GetLine()?>]<br />
 	<br />
 	<pre><?=print_r($ex->getTrace())?></pre>
-	<? } ?>
+	<?php } ?>
 </body>
 </html>
-<?
+<?php
+			try {
+				$logger = \Core\Log\Manager::Get();
+				$logger->Error($ex->Message, $ex);
+			} catch(\Exception $e) {
+			}
 			exit();
 		}
 
@@ -198,6 +203,12 @@ namespace Core
 </body>
 </html>
 <?php
+			}
+			
+			try {
+				$logger = \Core\Log\Manager::Get();
+				$logger->Error('Error Page: '.$errorCode);
+			} catch(\Exception $e) {
 			}
 			
 			exit(0);
@@ -273,6 +284,8 @@ namespace Core
 		{
 			session_start();
 
+			$logger = \Core\Log\Manager::Get();
+			$logger->Debug('Starting Request Processing.');
 			\Core\Handlers\HandlerFactory::ProcessRequest();
 		}
 	}
