@@ -4,30 +4,33 @@ namespace Core\Data\Statement
 {
 	class Delete extends \Core\Object
 	{
+		protected $_db;
 		protected $_tbl;
-		protected $_cond;
-		protected $_condVars;
+		protected $_where;
+		protected $_params;
 		
-		public function __construct($tbl,$cond,$condVars=array())
+		public function __construct($db, $tbl)
 		{
-			$this->_tbl=$tbl;
-			$this->_cond=$cond;
-			$this->_condVars=$condVars;
+			$this->_db=$db;
+			$this->_tbl=is_string($tbl) ? $tbl : $tbl->Name;
+			$this->_where=null;
+			$this->_params=array();
 		}
 		
-		public function Execute($condVars=array())
+		public function Where($where, $ps)
 		{
-			$db=\Core\Data\Database::Get();
+			$this->_where = $where;
+			$this->_params = array_merge($this->_params, $ps);
+		}
 			
-			$sql="DELETE FROM ".$db->Delim($this->_tbl,\Core\Data\Database::Delim_Table);
+		public function Execute()
+		{
+			$sql="DELETE FROM ".$this->_db->DelimTable($this->_tbl);
 			
-			if( isset($this->_cond) && $this->_cond != '' )
-				$sql.=" WHERE ".$this->_cond;
+			if( isset($this->_where) && $this->_where != '' )
+				$sql.=" WHERE ".$this->_where;
 				
-			if( $condVars != null && count($condVars) > 0 )
-				$this->_condVars = $condVars;
-			
-			return $db->ExecuteNonQuery($sql,$this->_condVars);
+			return $this->_db->ExecuteNonQuery($sql,$this->_params);
 		}
 	}
 }

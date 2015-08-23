@@ -20,6 +20,35 @@ namespace Core\Configuration
 			{
 				$json = \file_get_contents($file);
 				$json_arr = \json_decode($json, true);
+				if( !isset($json_arr) )
+				{
+					$e = json_last_error();
+					$msg = null;
+					switch($e)
+					{
+					case JSON_ERROR_NONE:
+					default:
+						break;
+					case JSON_ERROR_DEPTH:
+						$msg = 'The maximum stack depth has been exceeded.';
+						break;
+					case JSON_ERROR_STATE_MISMATCH:
+						$msg = 'Invalid or malformed JSON.';
+						break;
+					case JSON_ERROR_CTRL_CHAR:
+						$msg = 'Control character error, possibly incorrectly encoded.';
+						break;
+					case JSON_ERROR_SYNTAX:
+						$msg = 'Syntax error.';
+						break;
+					case JSON_ERROR_UTF8:
+						$msg = 'Malformed UTF-8 characters, possibly incorrectly encoded.';
+						break;
+					}
+					
+					if( $e > 0 && isset($msg) )
+						throw new \Exception('JSON Error ['.$e.'] loading file: ['.$file.']. Error: '.$msg);
+				}
 				$this->configs[] = $json_arr;
 			}
 		}

@@ -4,9 +4,12 @@ namespace Core\Configuration
 {
 	class Config extends \Core\DynObject
 	{
-		public function __construct($config)
+		protected $files;
+		public function __construct($config, $files = null)
 		{
 			parent::__construct($config, true);
+			
+			$this->files = $files;
 		}
 	}
 }

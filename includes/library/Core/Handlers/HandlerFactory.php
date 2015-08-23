@@ -22,8 +22,27 @@ namespace Core\Handlers
 				}
 			}
 
-			if( !$found )
-				$app->ErrorPageHandler(404);
+			if( $found )
+				return;
+			
+			static::ProcessErrorRequest(404);
+		}
+		
+		public static function ProcessErrorRequest($errorCode)
+		{
+			$txt = '';
+			if( isset(\Core\Application::$HttpErrorCodeText[$errorCode]) )
+				$txt = ' '.\Core\Application::$HttpErrorCodeText[$errorCode];
+			
+			header('HTTP/1.0 '.$errorCode.$txt);
+			$errorPath = \Core\Application::GetInstance()->Dirs->Root.DS.'error'.DS.$errorCode.'.phtml';
+			
+			if( file_exists($errorPath) )
+			{
+				// Print pretty error
+				$handler = new \Core\Handlers\PageHandler();
+				$handler->ExecuteErrorRequest($errorPath, $errorCode);
+			}
 		}
 	}
 }

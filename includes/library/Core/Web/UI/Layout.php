@@ -72,7 +72,7 @@ namespace Core\Web\UI
 			if( count($this->Page->Styles) == 0 )
 				return "";
 				
-			$ret = "\n\t<style type=\"text/css\">\n\t<!--\n";
+			$ret = "\t<style type=\"text/css\">\n";
 			
 			foreach( $this->Page->Styles as $k => $v )
 			{
@@ -84,7 +84,7 @@ namespace Core\Web\UI
 				$ret .= "}\n";
 			}
 			
-			$ret .= "\t-->\n\t</style>\n";
+			$ret .= "\t</style>\n";
 			
 			return $ret;
 		}
@@ -98,8 +98,11 @@ namespace Core\Web\UI
 			ob_end_flush();
 		}
 		
-		public function GetContent($name)
+		public function GetContent($name = 'default')
 		{
+			if( !isset($this->content[$name]) )
+				return null;
+			
 			return $this->content[$name];
 		}
 	}

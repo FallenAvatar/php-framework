@@ -82,6 +82,9 @@ namespace Core
 		
 		protected $Request;
 		public function _getRequest() { return $this->Request; }
+
+		protected $LastError;
+		public function _getLastError() { return $this->LastError; }
 		
 		protected function __construct() {
 			$this->Dirs = new DynObject(array(), false, true);
@@ -137,39 +140,8 @@ namespace Core
 		}
 		
 		public function ExceptionHandler($ex)
-		{
-			ob_end_clean();
-			
-			header('HTTP/1.0 500 Server Error');
-?>
-<!DOCTYPE html>
-<html>
-<head>
-	<title>Error in Site</title>
-	<link rel="stylesheet" type="text/css" href="css/reset.css" />
-	<style type="text/css">
-		h1{width: 100%;display:block;background-color:#f7fdb6;color:#FF0000;padding:10px;margin:25px 0;font-size:20pt;font-weight:bold;}
-		h2{font-weight:bold;font-size:16pt;}
-	</style>
-</head>
-<body>
-	<h1>Error</h1>
-	<?php if( !$this->Config->Core->debug ) { ?>
-	An error has occured.
-	<?php } else { ?>
-	<h2><?=$ex->getMessage()?></h2>
-	At <?=$ex->getFile()?> on line [<?=$ex->GetLine()?>]<br />
-	<br />
-	<pre><?=print_r($ex->getTrace())?></pre>
-	<?php } ?>
-</body>
-</html>
-<?php
-			try {
-				$logger = \Core\Log\Manager::Get();
-				$logger->Error($ex->Message, $ex);
-			} catch(\Exception $e) {
-			}
+			$this->LastError = $ex;
+			$this->ErrorPageHandler(500);
 			exit();
 		}
 
@@ -181,33 +153,21 @@ namespace Core
 			if( isset(self::$HttpErrorCodeText[$errorCode]) )
 				$txt = ' '.self::$HttpErrorCodeText[$errorCode];
 			
+			ob_end_clean();
 			header('HTTP/1.0 '.$errorCode.$txt);
 			
-			if( $errorCode == 404 )
-			{
-?>
-<!DOCTYPE html>
-<html>
-<head>
-	<title>Page not found</title>
-	<link rel="stylesheet" type="text/css" href="css/reset.css" />
-	<style type="text/css">
-		h1{width: 100%;display:block;background-color:#f7fdb6;color:#FF0000;padding:10px;margin:25px 0;font-size:20pt;font-weight:bold;}
-		h2{font-weight:bold;font-size:16pt;}
-	</style>
-</head>
-<body>
-	<h1>404 Page not found</h1>
-	<h2>The page that you have requested could not be found.</h2>
-	<!-- Path: <?=$path?> -->
-</body>
-</html>
-<?php
-			}
+			$errorPath = $this->Dirs->Root.DS.'error'.DS.$errorCode.'.phtml';
 			
+			if( \Core\IO\File::Exists($errorPath) )
+			{
+				// Print pretty error
+				$handler = new \Core\Handlers\PageHandler();
+				$handler->ExecuteErrorRequest($errorPath, $errorCode);
+			}
+
 			try {
 				$logger = \Core\Log\Manager::Get();
-				$logger->Error('Error Page: '.$errorCode);
+				$logger->Error($ex->Message, $ex);
 			} catch(\Exception $e) {
 			}
 			

@@ -13,7 +13,7 @@ namespace Core\Data
 		const Delim_String = 6;
 		
 		private static $_insts=array();
-		public static function GetInstance($conn = null)
+		public static function Get($conn = null)
 		{
 			$app = \Core\Application::GetInstance();
 			
@@ -24,14 +24,14 @@ namespace Core\Data
 			{
 				$adapter = "\\Core\\Data\\".$app->Config->Database->$conn->driver."\\Database";
 				$app = \Core\Application::GetInstance();
-				self::$_insts[$conn] = new $adapter($app->Config->Database->$conn);
+				self::$_insts[$conn] = new $adapter($conn, $app->Config->Database->$conn);
 			}
 			
 			return self::$_insts[$conn];
 		}
 		
 		protected $db_name;
-		public function _getDBName() { return $this->db_name; }
+		public function _getName() { return $this->db_name; }
 		protected $dbh;
 		
 		public function __construct($name, $creds)
@@ -46,12 +46,12 @@ namespace Core\Data
 		protected abstract function Connect($host,$user,$pw,$db);
 		public abstract function Delim($val,$delim);
 		
-		public function DelimDatabase($val) { return $this->Delim($val, Delim_Database); }
-		public function DelimSchema($val) { return $this->Delim($val, Delim_Schema); }
-		public function DelimTable($val) { return $this->Delim($val, Delim_Table); }
-		public function DelimColumn($val) { return $this->Delim($val, Delim_Column); }
-		public function DelimParameter($val) { return $this->Delim($val, Delim_Parameter); }
-		public function DelimString($val) { return $this->Delim($val, Delim_String); }
+		public function DelimDatabase($val) { return $this->Delim($val, self::Delim_Database); }
+		public function DelimSchema($val) { return $this->Delim($val, self::Delim_Schema); }
+		public function DelimTable($val) { return $this->Delim($val, self::Delim_Table); }
+		public function DelimColumn($val) { return $this->Delim($val, self::Delim_Column); }
+		public function DelimParameter($val) { return $this->Delim($val, self::Delim_Parameter); }
+		public function DelimString($val) { return $this->Delim($val, self::Delim_String); }
 		
 		public function ExecuteQuery($sql,$params=array(),$rowClass=null)
 		{
@@ -59,12 +59,12 @@ namespace Core\Data
 			$sth->execute($params);
 			$rows = $sth->fetchAll(\PDO::FETCH_ASSOC);
 			
-			if( !isset($tableClass) || trim($tableClass) == '' )
+			if( !isset($rowClass) || trim($rowClass) == '' )
 				return $rows;
 				
 			$ret = array();
 			foreach($rows as $row)
-				$ret[] = new $tableClass($row);
+				$ret[] = new $rowClass($row);
 				
 			return $ret;
 		}

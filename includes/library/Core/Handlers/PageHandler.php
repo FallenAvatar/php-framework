@@ -77,13 +77,29 @@ namespace Core\Handlers
 			if( !($inst instanceof \Core\Web\UI\Page) )
 				throw new \Exception('Page class ['.$class_name.'] found for url ['.$this->rel_path.'], but it does not extend \Core\Web\UI\Page.');
 
-			$inst->SetPath($this->path);
+			$this->RunPage($inst, $this->path);
+		}
+			$this->RunPage($inst, $this->path);
+		public function ExecuteErrorRequest($errorPagePath, $errorCode)
+		{
+			$class_name = '\\Site\\Pages\\Error\\_'.$errorCode;
+			$inst = null;
 
-			$this->RunPage($inst);
+			if( \Core\Autoload\StandardAutoloader::IsClassLoaded($class_name) || \Core\Autoload\StandardAutoloader::CanLoadClass($class_name) )
+				$inst = new $class_name();
+			else
+				$inst = new \Core\Web\UI\Page();
+
+			if( !($inst instanceof \Core\Web\UI\Page) )
+				throw new \Exception('Page class ['.$class_name.'] found for url ['.$this->rel_path.'], but it does not extend \Core\Web\UI\Page.');
+
+			$this->RunPage($inst, $errorPagePath);
 		}
 
 		protected function RunPage($page)
 		{
+			$page->SetPath($path);
+			
 			$page->Init();
 			$page->Load();
 			$page->Render();

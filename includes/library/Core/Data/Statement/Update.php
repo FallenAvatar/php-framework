@@ -4,17 +4,19 @@ namespace Core\Data\Statement
 {
 	class Update extends \Core\Object
 	{
+		protected $_db;
 		protected $_tbl;
 		protected $_vals;
-		protected $_cond;
-		protected $_condVars;
+		protected $_where;
+		protected $_params;
 		
-		public function __construct($tbl,$cond,$condVars=array())
+		public function __construct($db, $tbl)
 		{
-			$this->_tbl=$tbl;
-			$this->_cond=$cond;
-			$this->_condVars=$condVars;
+			$this->_db=$db;
+			$this->_tbl=is_string($tbl) ? $tbl : $tbl->Name;
 			$this->_vals=array();
+			$this->_where=null;
+			$this->_params=array();
 		}
 		
 		public function Add($col,$val)
@@ -22,11 +24,15 @@ namespace Core\Data\Statement
 			$this->_vals[$col]=$val;
 		}
 		
-		public function Execute($condVars=array())
+		public function Where($where, $ps)
 		{
-			$db=\Core\Data\Database::Get();
+			$this->_where = $where;
+			$this->_params = array_merge($this->_params, $ps);
+		}
 			
-			$sql="UPDATE ".$db->Delim($this->_tbl,\Core\Data\Database::Delim_Table)." SET ";
+		public function Execute()
+		{
+			$sql="UPDATE ".$this->_db->DelimTable($this->_tbl)." SET ";
 			$params = array();
 			
 			$first=true;
@@ -35,19 +41,16 @@ namespace Core\Data\Statement
 				if( !$first )
 					$sql.=", ";
 
-				$sql.=$db->Delim($col,\Core\Data\Database::Delim_Column)." = :".preg_replace('/\s/','_',preg_replace('/([^a-zA-Z0-9]*)/','',$col));
+				$sql.=$this->_db->DelimColumn($col)." = :".preg_replace('/\s/','_',preg_replace('/([^a-zA-Z0-9]*)/','',$col));
 				$params[preg_replace('/\s/','_',preg_replace('/[^a-zA-Z0-9]*/','',$col))]=$val;
 				
 				$first = false;
 			}
 			
-			if( isset($this->_cond) && $this->_cond != '' )
-				$sql.=" WHERE ".$this->_cond;
-				
-			if( $condVars != null && count($condVars) > 0 )
-				$this->_condVars = $condVars;
+			if( isset($this->_where) && $this->_where != '' )
+				$sql.=" WHERE ".$this->_where;
 			
-			return $db->ExecuteNonQuery($sql,array_merge($params,$this->_condVars));
+			return $this->_db->ExecuteNonQuery($sql,array_merge($this->_params,$params));
 		}
 	}
 }

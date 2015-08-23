@@ -150,7 +150,10 @@ namespace Core\Web\UI
 			
 			$name = array_pop($this->render_regions);
 			
-			$this->render_content[$name] = $content;
+			if( !isset($this->render_content[$name]) )
+				$this->render_content[$name] = '';
+				
+			$this->render_content[$name] .= $content;
 		}
 
 		// "Virtual" functions for specific page classes to override

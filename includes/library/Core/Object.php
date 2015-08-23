@@ -22,6 +22,15 @@ namespace Core
 			throw new Exception('Property ['.$name.'] not found on type ['.get_class($this).'].');
 		}
 		
+		public function __isset($name)
+		{
+			$method_name = '_get'.$name;
+			if( method_exists($this, $method_name) )
+				return $this->$method_name() != null;
+			
+			return false;
+		}
+		
 		public function __call($name, array $args)
 		{
 			if( !method_exists($this, $name.'0') )
