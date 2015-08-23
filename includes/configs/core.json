@@ -24,6 +24,28 @@
 	"Core": {
 		"debug": false,
 		"require_ssl": false,
+		"handlers": [
+			{
+				"action": "add",
+				"name": "scss-handler",
+				"value": "\\Core\\Web\\SCSS\\Handler"
+			},
+			{
+				"action": "add",
+				"name": "api-handler",
+				"value": "\\Core\\Web\\APIHandler"
+			},
+			{
+				"action": "add",
+				"name": "page-handler",
+				"value": "\\Core\\Web\\PageHandler"
+			},
+			{
+				"action": "add",
+				"name": "cms-page-handler",
+				"value": "\\Core\\Web\\CMS\\PageHandler"
+			}
+		],
 		"Data": {
 			"defaultConnectionName": "default"
 		},
