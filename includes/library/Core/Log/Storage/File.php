@@ -20,7 +20,7 @@ namespace Core\Log\Storage {
 			if( !isset($this->fp) )
 				$this->fp = \fopen(\Core\IO\Path::Combine($this->dir, date('Ymd').'.log'), 'a');
 			
-			$str = '['.$this->FormatDate().'] {'.$this->FormatLevel($level).'}: '.$message.' @ '.$this->FormatSource($source)."\n\nBacktrace:\n".$this->FormatBacktrace(2).((isset($details)) ? "\n\nAdditional Details:\n".print_r($details,true) : '');
+			$str = '['.$this->FormatDate().'] {'.$this->FormatLevel($level).'}: '.$message.' @ '.$this->FormatSource($source)."\n\nBacktrace:\n".$this->FormatBacktrace(2);
 			
 			\fwrite($this->fp, $str);
 		}

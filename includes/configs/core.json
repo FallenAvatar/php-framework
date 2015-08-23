@@ -28,22 +28,17 @@
 			{
 				"action": "add",
 				"name": "scss-handler",
-				"value": "\\Core\\Web\\SCSS\\Handler"
+				"value": "\\Core\\Handlers\\ScssHandler"
 			},
 			{
 				"action": "add",
 				"name": "api-handler",
-				"value": "\\Core\\Web\\APIHandler"
+				"value": "\\Core\\Handlers\\APIHandler"
 			},
 			{
 				"action": "add",
 				"name": "page-handler",
-				"value": "\\Core\\Web\\PageHandler"
-			},
-			{
-				"action": "add",
-				"name": "cms-page-handler",
-				"value": "\\Core\\Web\\CMS\\PageHandler"
+				"value": "\\Core\\Handlers\\PageHandler"
 			}
 		],
 		"Data": {
@@ -69,20 +64,6 @@
 					"level": 12
 				}
 			}
-		},
-		"Web": {
-			"handlers": [
-				{
-					"action": "add",
-					"name": "api-handler",
-					"value": "\\Core\\Handlers\\APIHandler"
-				},
-				{
-					"action": "add",
-					"name": "page-handler",
-					"value": "\\Core\\Handlers\\PageHandler"
-				}
-			]
 		}
 	},
 	"Site": {
