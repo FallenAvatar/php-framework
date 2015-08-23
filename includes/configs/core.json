@@ -27,6 +27,11 @@
 		"handlers": [
 			{
 				"action": "add",
+				"name": "static-file-handler",
+				"value": "\\Core\\Handlers\\StaticFileHandler"
+			},
+			{
+				"action": "add",
 				"name": "scss-handler",
 				"value": "\\Core\\Handlers\\ScssHandler"
 			},
