@@ -6,9 +6,9 @@
 		"default": {
 			"driver": "MySql",
 			"host": "localhost",
-			"user": "",
-			"pass": "",
-			"db_name": ""
+			"user": "fw",
+			"pass": "fw",
+			"db_name": "framework"
 		}
 	},
 	"Site": {

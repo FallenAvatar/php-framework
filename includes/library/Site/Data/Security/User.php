@@ -1,68 +1,48 @@
-<?php
+<?
 
 namespace Site\Data\Security
 {
 	class User extends \Core\Data\ActiveRecord
 	{
-		public static function FindAll()
-		{
-			$db = \Core\Data\Database::Get();
-			$sql = "SELECT * FROM `security_users`";
-			
-			return $db->ExecuteQuery($sql, array(), '\Site\Data\Security\User');
-		}
-
 		public static function FindByUsername($un)
 		{
-			$db = \Core\Data\Database::Get();
-			$sql = "SELECT * FROM `security_users` WHERE `username` = :un OR `email` = :email";
-			
-			$rows = $db->ExecuteQuery($sql, array('un' => $un, 'email' => $un), '\Site\Data\Security\User');
-			
-			if( count($rows) != 1 )
-				return null;
-			
-			return $rows[0];
+			return static::FindOnlyBy(array('username' => $un));
 		}
 		
 		public static function FindByUsernameOrEmail($un, $email)
 		{
-			$db = \Core\Data\Database::Get();
-			$sql = "SELECT * FROM `security_users` WHERE (`username` IS NOT NULL AND `username` = :un) OR (`email` IS NOT NULL AND `email` = :email)";
-			
-			$rows = $db->ExecuteQuery($sql, array('un' => $un, 'email' => $email), '\Site\Data\Security\User');
-			
-			return $rows;
+			return static::FindAllBy(array('username' => $un, 'email' => $email));
 		}
 		
 		public static function FindByForgotGuid($guid)
 		{
-			$db = \Core\Data\Database::Get();
-			$sql = "SELECT * FROM `security_users` WHERE `forgot_password_guid` = :guid";
-			
-			$rows = $db->ExecuteQuery($sql, array('guid' => $guid), '\Site\Data\Security\User');
-			
-			if( count($rows) != 1 )
-				return null;
-			
-			return $rows[0];
+			return static::FindOnlyBy(array('forgot_password_guid' => $guid));
 		}
 		
-		public function __construct($id=null)
-		{
-			parent::__construct(array(
-				'table' => 'security_users',
-				'primaryidname' => 'id',
-				'columns' => array(
-					'username',
-					'email',
-					'password',
-					'password_salt',
-					'forgot_password_guid',
-					'last_login'
-				),
-				'id' => $id
-			));
-		}
+		public static $table_name = 'security_users';
+		public static $columns = array(
+			'id' => '+@!bigint',
+			'username' => '*varchar[255]',
+			'email' => '*varchar[255]',
+			'password' => 'varchar[127]',
+			'password_salt' => 'varchar[32]',
+			'forgot_password_guid' => '#?varchar[36]',
+			'last_login' => '?bigint'
+		);
+		
+		public static $relationships = array(
+			'Group' => array(
+				'table' => 'security_user_groups',
+				'local_id' => 'user_id',
+				'foreign_id' => 'group_id',
+				'class' => '\Site\Data\Security\Group'
+			),
+			'Role' => array(
+				'table' => 'security_user_roles',
+				'local_id' => 'user_id',
+				'foreign_id' => 'role_id',
+				'class' => '\Site\Data\Security\Role'
+			),
+		);
 	}
 }

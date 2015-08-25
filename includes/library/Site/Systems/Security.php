@@ -1,4 +1,4 @@
-<?php
+<?
 
 namespace Site\Systems
 {
@@ -7,6 +7,11 @@ namespace Site\Systems
 		public static function GetUser()
 		{
 			return $_SESSION['User'];
+		}
+		
+		public static function IsLoggedIn()
+		{
+			return static::GetUser() != null;
 		}
 		
 		public static function CreateUser($username, $password, $email, &$error)
@@ -20,8 +25,8 @@ namespace Site\Systems
 			$user = new \Site\Data\Security\User();
 			$user->username = $username;
 			$user->email = $email;
-			$user->password_salt = \System\Security\Cryptography::GenerateRandomSalt(22, \System\Security\Cryptography::Salt_Charset_Blowfish);
-			$user->password = \System\Security\Cryptography\Blowfish::Hash($password, $user->password_salt);
+			$user->password_salt = \Core\Security\Cryptography::GenerateRandomSalt(22, \Core\Security\Cryptography::Salt_Charset_Blowfish);
+			$user->password = \Core\Security\Cryptography\Blowfish::Hash($password, $user->password_salt);
 			$user->forgot_password_guid = null;
 			$user->last_login = null;
 			$user->Save();
@@ -34,12 +39,12 @@ namespace Site\Systems
 			if( !isset($user) || !isset($user->id) || $user->id <= 0 )
 				return false;
 				
-			$hash = \System\Security\Cryptography\Blowfish::Hash($curr_password, $user->password_salt);
+			$hash = \Core\Security\Cryptography\Blowfish::Hash($curr_password, $user->password_salt);
 			if( $user->password != $hash )
 				return false;
 				
-			$user->password_salt = \System\Security\Cryptography::GenerateRandomSalt(22, \System\Security\Cryptography::Salt_Charset_Blowfish);
-			$user->password = \System\Security\Cryptography\Blowfish::Hash($new_password, $user->password_salt);
+			$user->password_salt = \Core\Security\Cryptography::GenerateRandomSalt(22, \Core\Security\Cryptography::Salt_Charset_Blowfish);
+			$user->password = \Core\Security\Cryptography\Blowfish::Hash($new_password, $user->password_salt);
 			$user->Save();
 			
 			return true;
@@ -62,7 +67,7 @@ namespace Site\Systems
 			if( !isset($user) || !isset($user->id) || $user->id <= 0 || $user->username != $un )
 				return false;
 				
-			$hash = \System\Security\Cryptography\Blowfish::Hash($pw, $user->password_salt);
+			$hash = \Core\Security\Cryptography\Blowfish::Hash($pw, $user->password_salt);
 			if( $user->password != $hash )
 				return false;
 			
@@ -91,7 +96,7 @@ namespace Site\Systems
 			if( $user == null || !isset($user->id) || $user->id <= 0 )
 				return false;
 				
-			$user->forgot_password_guid = \System\Guid::NewGuid();
+			$user->forgot_password_guid = \Core\Guid::NewGuid();
 			$user->Save();
 			
 			return true;
@@ -107,27 +112,24 @@ namespace Site\Systems
 			return $user;
 		}
 
-		public static function HasRole($name, $ignore_dev = false;)
+		public static function HasRole($name)
 		{
 			$user = static::GetUser();
 			
 			if( $user == null )
 				return false;
-				
-			if( $ignore_dev == false && $user->HasGroup('dev') )
-				return true;
-			
+
 			$role = \Site\Data\Security\Role::FindByName($name);
 			
 			if( $role == null )
 				return false;
 				
-			if( $user->HasRole($role) )
+			if( $user->HasRole($role->id) )
 				return true;
 				
-			foreach( $user->Groups as $g )
+			foreach( $user->GetGroups() as $g )
 			{
-				if( $g->HasRole($role) )
+				if( $g->HasRole($role->id) )
 					return true;
 			}
 			

@@ -2,12 +2,14 @@
 
 namespace Core\Data\Statement
 {
-	class Delete extends \Core\Object
+	class Delete extends \Core\Object implements IStatement
 	{
 		protected $_db;
 		protected $_tbl;
 		protected $_where;
 		protected $_params;
+		protected $_paramPrefix;
+		public function _setParamPrefix($prefix) { $this->_paramPrefix = $prefix; }
 		
 		public function __construct($db, $tbl)
 		{
@@ -25,12 +27,17 @@ namespace Core\Data\Statement
 			
 		public function Execute()
 		{
+			return $this->_db->ExecuteNonQuery($this->Sql,$this->_params);
+		}
+		
+		public function _getSql()
+		{
 			$sql="DELETE FROM ".$this->_db->DelimTable($this->_tbl);
 			
 			if( isset($this->_where) && $this->_where != '' )
 				$sql.=" WHERE ".$this->_where;
 				
-			return $this->_db->ExecuteNonQuery($sql,$this->_params);
+			return $sql;
 		}
 	}
 }

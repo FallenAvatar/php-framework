@@ -165,16 +165,20 @@ namespace Core
 				$handler->ExecuteErrorRequest($errorPath, $errorCode);
 			}
 
-			try {
-				$logger = \Core\Log\Manager::Get();
-				$logger->Error($ex->Message, $ex);
-			} catch(\Exception $e) {
+			if( $errorCore == 500 )
+			{
+				try {
+					$logger = \Core\Log\Manager::Get();
+					$logger->Error($ex->Message, $ex);
+				} catch(\Exception $e) {
+					// Do nothing. Just make sure logging can't trigger an error.
+				}
 			}
 			
 			exit(0);
 		}
 
-		protected function _init()
+		private function _init()
 		{
 			set_error_handler(array($this,'ErrorHandler'));
 			set_exception_handler(array($this,'ExceptionHandler'));
@@ -183,9 +187,19 @@ namespace Core
 			$this->_fixPhp();
 
 			$this->Request = new \Core\Web\Request();
+			
+			$this->Init();
+		}
+		
+		protected function Init() {
+			$this->OnInit();
+		}
+		
+		protected function OnInit() {
+			// For base classes to override
 		}
 
-		protected function _loadConfig()
+		private function _loadConfig()
 		{
 			$files = array();
 			$files[] = $this->Dirs->Configs.'core.json';
@@ -213,7 +227,7 @@ namespace Core
 			$this->Config = $configStack->GetMergedConfig();
 		}
 		
-		protected function _fixPhp()
+		private function _fixPhp()
 		{
 			if( isset($this->Config->PHP) )
 			{
@@ -240,13 +254,29 @@ namespace Core
 			}
 		}
 		
-		protected function _run()
+		private function _run()
 		{
 			session_start();
 
+			$this->Run();
+		}
+		
+		protected function Run() {
+			$this->OnPreRun();
+			
 			$logger = \Core\Log\Manager::Get();
 			$logger->Debug('Starting Request Processing.');
 			\Core\Handlers\HandlerFactory::ProcessRequest();
+			
+			$this0>OnPostRun();
+		}
+		
+		protected function OnPreRun() {
+			// For base classes to override
+		}
+		
+		protected function OnPostRun() {
+			// For base classes to override
 		}
 	}
 }

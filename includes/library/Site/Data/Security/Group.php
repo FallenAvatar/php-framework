@@ -1,45 +1,35 @@
-<?php
+<?
 
 namespace Site\Data\Security
 {
 	class Group extends \Core\Data\ActiveRecord
 	{
-		public static function FindAll($show_hidden = false)
-		{
-			$db = \Core\Data\Database::Get();
-			$sql = "SELECT * FROM `security_groups`";
-			
-			if( !$show_hidden )
-				$sql .= " WHERE `hidden` = 0";
-			
-			return $db->ExecuteQuery($sql, array(), '\Site\Data\Security\Group');
-		}
-		
 		public static function FindByName($name)
 		{
-			$db = \Core\Data\Database::Get();
-			$sql = "SELECT * FROM `security_groups` WHERE `name` = :name";
-			
-			$rows = $db->ExecuteQuery($sql, array('name' => $name), '\Site\Data\Security\Group');
-			
-			if( count($rows) <= 0 )
-				return null;
-			
-			return $rows[0];
+			return static::FindOnlyBy(array('name' => $name));
 		}
 		
-		public function __construct($id=null)
-		{
-			parent::__construct(array(
-				'table' => 'security_groups',
-				'primaryidname' => 'id',
-				'columns' => array(
-					'name',
-					'display_name',
-					'hidden'
-				),
-				'id' => $id
-			));
-		}
+		public static $table_name = 'security_groups';
+		public static $columns = array(
+			'id' => '+@!bigint',
+			'name' => '*varchar[255]',
+			'display_name' => 'varchar[500]',
+			'hidden' => 'bit'
+		);
+		
+		public static $relationships = array(
+			'User' => array(
+				'table' => 'security_user_groups',
+				'local_id' => 'group_id',
+				'foreign_id' => 'user_id',
+				'class' => '\Site\Data\Security\User'
+			),
+			'Role' => array(
+				'table' => 'security_group_roles',
+				'local_id' => 'group_id',
+				'foreign_id' => 'role_id',
+				'class' => '\Site\Data\Security\Role'
+			),
+		);
 	}
 }

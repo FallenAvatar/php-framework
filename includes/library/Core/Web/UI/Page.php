@@ -97,7 +97,6 @@ namespace Core\Web\UI
 
 		public function Load()
 		{
-			// Databind controls
 			$this->OnLoad();
 		}
 		
