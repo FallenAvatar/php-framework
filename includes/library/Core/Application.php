@@ -268,7 +268,7 @@ namespace Core
 			$logger->Debug('Starting Request Processing.');
 			\Core\Handlers\HandlerFactory::ProcessRequest();
 			
-			$this0>OnPostRun();
+			$this->OnPostRun();
 		}
 		
 		protected function OnPreRun() {
