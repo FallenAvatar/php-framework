@@ -86,7 +86,7 @@ namespace Core\Data {
 			$i = 0;
 			
 			foreach($stmts as $stmt) {
-				$stmt->ParamPerfix = 'i'.$i.'_'
+				$stmt->ParamPerfix = 'i'.$i.'_';
 				$sql .= $stmt->Sql;
 				$params = array_merge($params, $stmt->Params);
 				$i++;

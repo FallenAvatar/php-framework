@@ -5,7 +5,7 @@ namespace Core\Data\MySql {
 		protected function Connect($host,$user,$pw,$db) {
 			$dsn = 'mysql:host='.$host.';port=3306;dbname='.$db.';charset=utf8';
 			$options = array(
-				PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'	// Fix for charset being ignored prior to 5.3.6
+				\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'	// Fix for charset being ignored prior to 5.3.6
 			);
 			$this->dbh = new \PDO($dsn, $user, $pw, $options);
 		}

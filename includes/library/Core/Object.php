@@ -31,7 +31,7 @@ namespace Core
 			return false;
 		}
 		
-		public function __call($name, array $args)
+		public function __call($name, $args)
 		{
 			if( !method_exists($this, $name.'0') )
 				throw new Exception('Method ['.$name.'] not found on type ['.get_class($this).'].');
@@ -61,7 +61,7 @@ namespace Core
 			return $method->invokeArgs($this, $args);
 		}
 		
-		public static function __callStatic($name, array $args)
+		public static function __callStatic($name, $args)
 		{
 		}
 		
