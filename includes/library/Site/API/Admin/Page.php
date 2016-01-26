@@ -1,4 +1,4 @@
-<?
+<?php
 
 namespace Site\API\Admin
 {
@@ -7,8 +7,8 @@ namespace Site\API\Admin
 		public function Load($page)
 		{
 			$user = \Site\Systems\Security::GetUser();
-			/*if( !isset($user) )
-				return array('error' => true, 'message' => 'You are not logged in.');*/
+			if( !isset($user) )
+				return array('error' => true, 'message' => 'You are not logged in.');
 			
 			$base_path = \Core\IO\Path::Combine($this->App->Dirs->Root,'admin','pages');
 			$path = \Core\IO\Path::Combine($base_path, $page.'.phtml');

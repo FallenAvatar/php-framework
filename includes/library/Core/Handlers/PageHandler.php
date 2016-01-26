@@ -23,6 +23,11 @@ namespace Core\Handlers
 					$this->path = \Core\IO\Path::Combine($this->path,'index.php');
 					$this->rel_path = \Core\IO\Path::Combine($this->rel_path,'index.php');
 				}
+				else if( is_dir($this->path) && is_file(\Core\IO\Path::Combine($this->path,'index.phtml')) )
+				{
+					$this->path = \Core\IO\Path::Combine($this->path,'index.phtml');
+					$this->rel_path = \Core\IO\Path::Combine($this->rel_path,'index.phtml');
+				}
 				else if( is_file($this->path.'.php') )
 				{
 					$this->path = $this->path.'.php';
@@ -79,7 +84,7 @@ namespace Core\Handlers
 
 			$this->RunPage($inst, $this->path);
 		}
-			$this->RunPage($inst, $this->path);
+		
 		public function ExecuteErrorRequest($errorPagePath, $errorCode)
 		{
 			$class_name = '\\Site\\Pages\\Error\\_'.$errorCode;
@@ -96,7 +101,7 @@ namespace Core\Handlers
 			$this->RunPage($inst, $errorPagePath);
 		}
 
-		protected function RunPage($page)
+		protected function RunPage($page, $path)
 		{
 			$page->SetPath($path);
 			

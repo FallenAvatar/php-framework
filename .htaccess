@@ -8,7 +8,7 @@ RewriteBase /
 RewriteRule ^includes/library/base.php$ - [L,NC]
 
 # Prevent direct access to includes and config files
-RewriteRule ^includes/(.*)$ 404.html [L,NC]
+RewriteRule ^includes/(.*)$ 404 [L,NC]
 
 # Rewrite appropiate URLs to our engine
 RewriteRule ^$ includes/library/base.php [L,NC,QSA]

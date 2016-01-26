@@ -55,7 +55,7 @@ namespace Core
 			return self::$s_inst;
 		}
 		
-		public static function Run()
+		public static function RunApp()
 		{
 			$class = '';
 			if( \Core\Autoload\StandardAutoloader::CanLoadClass("\\Site\\Application") )
@@ -139,7 +139,7 @@ namespace Core
 			throw new \ErrorException($errstr, $errno, 0, $errfile, $errline);
 		}
 		
-		public function ExceptionHandler($ex)
+		public function ExceptionHandler($ex) {
 			$this->LastError = $ex;
 			$this->ErrorPageHandler(500);
 			exit();
@@ -158,14 +158,14 @@ namespace Core
 			
 			$errorPath = $this->Dirs->Root.DS.'error'.DS.$errorCode.'.phtml';
 			
-			if( \Core\IO\File::Exists($errorPath) )
+			if( is_file($errorPath) )
 			{
 				// Print pretty error
 				$handler = new \Core\Handlers\PageHandler();
 				$handler->ExecuteErrorRequest($errorPath, $errorCode);
 			}
 
-			if( $errorCore == 500 )
+			if( $errorCode == 500 )
 			{
 				try {
 					$logger = \Core\Log\Manager::Get();

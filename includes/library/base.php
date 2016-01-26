@@ -9,4 +9,4 @@ require_once(dirname(__FILE__).DS.'..'.DS.'library'.DS.'Core'.DS.'Autoload'.DS.'
 
 include_once('functions.php');
 
-\Core\Application::Run();
+\Core\Application::RunApp();
