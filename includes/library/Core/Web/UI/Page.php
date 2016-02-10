@@ -65,20 +65,22 @@ namespace Core\Web\UI
 			return $this->Options[$name];
 		}
 		
-		public function AddStyleSheet($path,$rel='StyleSheet',$media=null)
+		public function AddStyleSheet($path,$rel='StyleSheet',$media=null,$group=null)
 		{
 			$this->StyleSheets[] = array(
 				'path' => $path,
 				'rel' => $rel,
-				'media' => $media
+				'media' => $media,
+				'group' => $group
 			);
 		}
 		
-		public function AddJSFile($path,$cond='')
+		public function AddJSFile($path,$cond='',$group=null)
 		{
 			$this->JSFiles[] = array(
 				'cond' => $cond,
-				'path' => $path
+				'path' => $path,
+				'group' => null
 			);
 		}
 		

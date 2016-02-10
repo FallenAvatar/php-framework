@@ -34,6 +34,18 @@ namespace Site\Systems
 			return $user;
 		}
 		
+		public static function UpdatePassword(\Site\Data\Security\User $user, $new_password)
+		{
+			if( !isset($user) || !isset($user->id) || $user->id <= 0 )
+				return false;
+				
+			$user->password_salt = \Core\Security\Cryptography::GenerateRandomSalt(22, \Core\Security\Cryptography::Salt_Charset_Blowfish);
+			$user->password = \Core\Security\Cryptography\Blowfish::Hash($new_password, $user->password_salt);
+			$user->Save();
+			
+			return true;
+		}
+		
 		public static function ChangePassword(\Site\Data\Security\User $user, $curr_password, $new_password)
 		{
 			if( !isset($user) || !isset($user->id) || $user->id <= 0 )
@@ -73,6 +85,9 @@ namespace Site\Systems
 			
 			$_SESSION['User'] = $user;
 			
+			$user->last_login = time();
+			$user->Save();
+			
 			return $user;
 		}
 
@@ -91,8 +106,15 @@ namespace Site\Systems
 			return false;
 		}
 		
-		public static function ResetPassword(\Site\Data\Security\User &$user)
+		public static function ResetPassword($usernameOrEmail)
 		{
+			$users = \Site\Data\Security\User::FindByUsernameOrEmail($usernameOrEmail, $usernameOrEmail);
+			
+			if( count($users) <= 0 )
+				return false;
+			
+			$user = $users[0];
+			
 			if( $user == null || !isset($user->id) || $user->id <= 0 )
 				return false;
 				
@@ -134,6 +156,17 @@ namespace Site\Systems
 			}
 			
 			return false;
+		}
+		
+		public static function GetRandomPassword($len = 8, $chars = null) {
+			if( !isset($chars) )
+				$chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789()[]{};:,.<>/?!@#%&*';
+			
+			$max = strlen($chars) - 1;
+			$ret = '';
+			
+			for( $i=0; $i<$len; $i++ )
+				$ret .= $chars[rand(0,$max)];
 		}
 	}
 }

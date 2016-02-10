@@ -2,7 +2,7 @@
 
 namespace Core\Data\Statement
 {
-	class Delete extends \Core\Object implements IStatement
+	class Delete extends \Core\Object
 	{
 		protected $_db;
 		protected $_tbl;

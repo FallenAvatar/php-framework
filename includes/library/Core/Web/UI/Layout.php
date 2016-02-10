@@ -34,22 +34,29 @@ namespace Core\Web\UI
 			return $this->Page->GetOption($name,$default);
 		}
 		
-		public function GetStyleSheets()
+		public function GetStyleSheets($group=null)
 		{
 			$ret="\n";
 			
-			foreach( $this->Page->StyleSheets as $stylesheet )
+			foreach( $this->Page->StyleSheets as $stylesheet ) {
+				if( $stylesheet['group'] != $group )
+					continue;
+				
 				$ret .= "\t".'<link href="'.$stylesheet['path'].'" rel="'.$stylesheet['rel'].'"'.((isset($stylesheet['media'])) ? ' media="'.$stylesheet['media'].'"' : '').' type="text/css" />'."\n";
+			}
 				
 			return $ret;
 		}
 		
-		public function GetJSFiles()
+		public function GetJSFiles($group=null)
 		{
 			$ret = "\n";
 			
 			foreach( $this->Page->JSFiles as $js )
 			{
+				if( $js['group'] != $group )
+					continue;
+				
 				$cond = $js['cond'];
 				$ret .= "\t";
 

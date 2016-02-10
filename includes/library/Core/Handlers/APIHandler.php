@@ -127,7 +127,8 @@ namespace Core\Handlers
 			$args_to_pass = array();
 			
 			$input = $_POST;
-			if( $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest' && $_SERVER['CONTENT_TYPE'] == 'application/json' )
+			$aj = 'application/json';
+			if( $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest' && ($_SERVER['CONTENT_TYPE'] == $aj || substr($_SERVER['CONTENT_TYPE'], 0, strlen($aj)+1) == $aj.';') )
 			{
 				$input = fopen('php://input','r');
 				$json_string = fgets($input);

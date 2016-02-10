@@ -1,7 +1,7 @@
 <?php
 
 namespace Core\Data\Statement {
-	class Insert extends \Core\Object implements IStatement {
+	class Insert extends \Core\Object {
 		protected $_db;
 		protected $_tbl;
 		protected $_rows;
@@ -71,7 +71,7 @@ namespace Core\Data\Statement {
 						$sql2 .= ', ';
 						
 					$colClean=preg_replace('/[^a-zA-Z0-9]*/','',preg_replace('/\s+/','_',$col)).$idx;
-				}
+				
 				$sql2.=':'.$colClean;
 				$this->_actParams[$colClean] = $val;
 				

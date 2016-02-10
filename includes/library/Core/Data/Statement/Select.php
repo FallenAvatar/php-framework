@@ -2,7 +2,7 @@
 
 namespace Core\Data\Statement
 {
-	class Select extends \Core\Object implements IStatement
+	class Select extends \Core\Object /*implements IStatement*/
 	{
 		protected $_db;
 		protected $_tbl;

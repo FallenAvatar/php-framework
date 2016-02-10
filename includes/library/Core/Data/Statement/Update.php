@@ -2,7 +2,7 @@
 
 namespace Core\Data\Statement
 {
-	class Update extends \Core\Object implements IStatement
+	class Update extends \Core\Object
 	{
 		protected $_db;
 		protected $_tbl;

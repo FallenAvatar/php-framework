@@ -2,7 +2,7 @@
 
 namespace Core\Data\Statement
 {
-	class InsertSingle extends \Core\Object implements IStatement
+	class InsertSingle extends \Core\Object
 	{
 		protected $_db;
 		protected $_tbl;

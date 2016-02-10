@@ -1,9 +1,9 @@
 <?php
 
-namespace Core\Data\Statements {
+namespace Core\Data\Statement {
 	interface IStatement {
 		public function _getSql();
 		public function _getParams();
-		public function _setParamPrefix();
+		public function _setParamPrefix($prefix);
 	}
 }

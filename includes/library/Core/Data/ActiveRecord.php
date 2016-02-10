@@ -292,18 +292,21 @@ namespace Core\Data {
 			$type = null;
 			
 			// Has Add Remove Get
-			if( startsWith($name, 'Has') ) {
+			if( \startsWith($name, 'Has') ) {
 				$rel_name = substr($name, 3);
 				$type = 'has';
-			} else if( startsWith($name, 'Add') ) {
+			} else if( \startsWith($name, 'Add') ) {
 				$rel_name = substr($name, 3);
 				$type = 'add';
-			} else if( startsWith($name, 'Remove') ) {
+			} else if( \startsWith($name, 'Remove') ) {
 				$rel_name = substr($name, 6);
 				$type = 'remove';
-			} else if( startsWith($name, 'Get') ) {
+			} else if( \startsWith($name, 'Get') ) {
 				$rel_name = substr($name, 3);
 				$type = 'get';
+			} else if( \startsWith($name, 'Clear') ) {
+				$rel_name = substr($name, 5);
+				$type = 'clear';
 			} else
 				throw new \Exception('No method ['.$name.'] on class ['.get_called_class().'].');
 		
@@ -366,14 +369,25 @@ namespace Core\Data {
 					$stmt = new \Core\Data\Statement\Delete($db, $link_tbl);
 					$stmt->Where($where, array('id' => $this->id, 'id2' => $args[0]));
 					$stmt->Execute();
+				} else if( $type == 'clear' ) {
+					if( !$is_plural )
+						throw new \Exception();
+					
+					$where = $db->DelimColumn($info['local_id']).' = :id';
+					
+					$stmt = new \Core\Data\Statement\Delete($db, $link_tbl);
+					$stmt->Where($where, array('id' => $this->id));
+					$stmt->Execute();
 				}
 			} else if( isset($info['local_id']) ) {		// one-to-many
+				throw new \Exception('Not Implemented.');
 				if( !$is_plural )
 					throw new \Exception();
 			
 				$class_name = $info['class'];
 				$tbl = $class_name::$table_name;
 			} else if( isset($info['foreign_id']) ) {	// many-to-one
+				throw new \Exception('Not Implemented.');
 				if( $is_plural )
 					throw new \Exception();
 				
