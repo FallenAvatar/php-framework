@@ -1,14 +1,11 @@
 <?php
 
-namespace Core\Handlers
-{
-	class PageHandler extends \Core\Object implements IRequestHandler
-	{
+namespace Core\Handlers {
+	class PageHandler extends \Core\Object implements IRequestHandler {
 		protected $path;
 		protected $rel_path;
 		
-		public function CanHandleRequest($App)
-		{
+		public function CanHandleRequest($App) {
 			$this->path = $App->Request->Url->Path;
 			$this->rel_path = $this->path;
 			
@@ -16,32 +13,21 @@ namespace Core\Handlers
 				$this->path = substr($App->Dirs->WebRoot,0,strlen($App->Dirs->WebRoot)-1).$this->path;
 
 			$this->path = \Core\IO\Path::Combine($App->Dirs->DocumentRoot,$this->path);
-			if( !is_file($this->path) )
-			{
-				if( is_dir($this->path) && is_file(\Core\IO\Path::Combine($this->path,'index.php')) )
-				{
-					$this->path = \Core\IO\Path::Combine($this->path,'index.php');
-					$this->rel_path = \Core\IO\Path::Combine($this->rel_path,'index.php');
-				}
-				else if( is_dir($this->path) && is_file(\Core\IO\Path::Combine($this->path,'index.phtml')) )
-				{
+			if( !is_file($this->path) ) {
+				if( is_dir($this->path) && is_file(\Core\IO\Path::Combine($this->path,'index.phtml')) ) {
 					$this->path = \Core\IO\Path::Combine($this->path,'index.phtml');
 					$this->rel_path = \Core\IO\Path::Combine($this->rel_path,'index.phtml');
-				}
-				else if( is_file($this->path.'.php') )
-				{
-					$this->path = $this->path.'.php';
-					$this->rel_path = $this->rel_path.'.php';
-				}
-				else if( is_file($this->path.'.phtml') )
-				{
+				} else if( is_dir($this->path) && is_file(\Core\IO\Path::Combine($this->path,'index.php')) ) {
+					$this->path = \Core\IO\Path::Combine($this->path,'index.php');
+					$this->rel_path = \Core\IO\Path::Combine($this->rel_path,'index.php');
+				} else if( is_file($this->path.'.phtml') ) {
 					$this->path = $this->path.'.phtml';
 					$this->rel_path = $this->rel_path.'.phtml';
-				}
-				else
-				{
+				} else if( is_file($this->path.'.php') ) {
+					$this->path = $this->path.'.php';
+					$this->rel_path = $this->rel_path.'.php';
+				} else
 					return false;
-				}
 			}
 			
 			$ext = substr($this->rel_path, strrpos($this->rel_path,'.')+1);
@@ -53,30 +39,43 @@ namespace Core\Handlers
 			return true;
 		}
 
-		public function ExecuteRequest($App)
-		{
-			$this->rel_path = substr($this->rel_path, 0, strrpos($this->rel_path,'.'));
+		public function ExecuteRequest($App) {
+			$p = strrpos($this->rel_path,'.');
+			$ext = substr($this->rel_path, $p+1);
+			$this->rel_path = substr($this->rel_path, 0, $p);
+			
 			$parts = explode('/',$this->rel_path);
 			$class_name = '\\Site\\Pages';
+			
+			$keywords = array('abstract', 'and', 'array', 'as', 'break', 'callable', 'case', 'catch', 'class', 'clone', 'const', 'continue', 
+				'declare', 'default', 'die', 'do', 'echo', 'else', 'elseif', 'empty', 'enddeclare', 'endfor', 'endforeach', 'endif', 'endswitch', 
+				'endwhile', 'eval', 'exit', 'extends', 'final', 'finally', 'for', 'foreach', 'function', 'global', 'goto', 'if', 'implements', 
+				'include', 'include_once', 'instanceof', 'insteadof', 'interface', 'isset', 'list', 'namespace', 'new', 'or', 'print', 'private', 
+				'protected', 'public', 'require', 'require_once', 'return', 'static', 'switch', 'throw', 'trait', 'try', 'unset', 'use', 'var', 
+				'while', 'xor', 'yield');
 
-			foreach($parts as $part)
-			{
-				if( trim($part) == '' )
+			foreach($parts as $part) {
+				$pa = str_replace('-','_',strtolower(trim($part)));
+				if( $pa == '' )
 					continue;
+				
+				if( in_array($pa, $keywords) )
+					$pa = '_'.$pa;
 
-				$class_name .= '\\'.$part;
+				$class_name .= '\\'.$pa;
 			}
 
 			$inst = null;
 
-			if( \Core\Autoload\StandardAutoloader::IsClassLoaded($class_name) || \Core\Autoload\StandardAutoloader::CanLoadClass($class_name) )
+			if( strtolower($ext) == 'phtml' && is_file(substr($this->path, 0, strrpos($this->path, '.')).'.php') ) {
+				require_once(substr($this->path, 0, strrpos($this->path, '.')).'.php');
 				$inst = new $class_name();
-			else if( \Core\Autoload\StandardAutoloader::IsClassLoaded('\Site\Page') || \Core\Autoload\StandardAutoloader::CanLoadClass('\Site\Page') )
-			{
+			} else if( \Core\Autoload\StandardAutoloader::IsClassLoaded($class_name) || \Core\Autoload\StandardAutoloader::CanLoadClass($class_name) )
+				$inst = new $class_name();
+			else if( \Core\Autoload\StandardAutoloader::IsClassLoaded('\Site\Page') || \Core\Autoload\StandardAutoloader::CanLoadClass('\Site\Page') ) {
 				$class_name = '\Site\Page';
 				$inst = new \Site\Page();
-			}
-			else
+			} else
 				$inst = new \Core\Web\UI\Page();
 
 			if( !($inst instanceof \Core\Web\UI\Page) )
@@ -85,8 +84,7 @@ namespace Core\Handlers
 			$this->RunPage($inst, $this->path);
 		}
 		
-		public function ExecuteErrorRequest($errorPagePath, $errorCode)
-		{
+		public function ExecuteErrorRequest($errorPagePath, $errorCode) {
 			$class_name = '\\Site\\Pages\\Error\\_'.$errorCode;
 			$inst = null;
 
@@ -101,8 +99,7 @@ namespace Core\Handlers
 			$this->RunPage($inst, $errorPagePath);
 		}
 
-		protected function RunPage($page, $path)
-		{
+		protected function RunPage($page, $path) {
 			$page->SetPath($path);
 			
 			$page->Init();
