@@ -74,9 +74,9 @@ namespace Site\Systems
 
 		public static function Login($un, $pw)
 		{
-			$user = \Site\Data\Security\User::FindByUsername($un);
+			$user = \Site\Data\Security\User::FindByUsernameOrEmail($un, $un);
 			
-			if( !isset($user) || !isset($user->id) || $user->id <= 0 || $user->username != $un )
+			if( !isset($user) || !isset($user->id) || $user->id <= 0 || (strtolower($user->username) != strtolower($un) && strtolower($user->email) != strtolower($un)) )
 				return false;
 				
 			$hash = \Core\Security\Cryptography\Blowfish::Hash($pw, $user->password_salt);
@@ -156,6 +156,20 @@ namespace Site\Systems
 			}
 			
 			return false;
+		}
+		
+		public static function IsInGroup($g) {
+			$user = static::GetUser();
+			
+			if( !isset($user) )
+				return false;
+			
+			if( \is_string($g) )
+				$g = \Site\Data\Security\Group::FindByName($g);
+			else if( \is_numeric($g) )
+				$g = new \Site\Data\Security\Group($g);
+			
+			return $user->HasGroup($g->id);
 		}
 		
 		public static function GetRandomPassword($len = 8, $chars = null) {

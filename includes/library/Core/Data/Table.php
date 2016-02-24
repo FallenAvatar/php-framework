@@ -61,19 +61,18 @@ namespace Core\Data
 			}
 					
 			return $stmt->Execute($cols);
-			}
+		}
 			
 		public function Update($map, $where = null, $ps = null)
-			{
+		{
 			$stmt = new \Core\Data\Statement\Update($this->db, $this->tbl_name);
-			foreach($map as $col => $val)
-				{
+			foreach($map as $col => $val) {
 				$stmt->Add($col, $val);
-				}
+			}
 			$stmt->Where($where, $ps);
 				
 			return $stmt->Execute();
-			}
+		}
 			
 		public function Delete($where = null, $ps = null)
 		{

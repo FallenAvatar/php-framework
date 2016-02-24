@@ -1,6 +1,7 @@
 {
 	"API": {
-		"enabled": true
+		"enabled": true,
+		"security_handler": "\\Site\\APISecurityHandler"
 	},
 	"Database": {
 		"default": {

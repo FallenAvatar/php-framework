@@ -11,7 +11,7 @@ namespace Site\Data\Security
 		
 		public static function FindByUsernameOrEmail($un, $email)
 		{
-			return static::FindAllBy(array('username' => $un, 'email' => $email));
+			return static::FindOnlyBy(array('username' => $un, 'email' => $email), 'OR');
 		}
 		
 		public static function FindByForgotGuid($guid)

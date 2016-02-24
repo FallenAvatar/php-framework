@@ -13,7 +13,7 @@ namespace Core\Data {
 			return $db->ExecuteQuery($sql, array(), get_called_class());
 		}
 		
-		public static function FindAllBy($params, $order_by = null) {
+		public static function FindAllBy($params, $order_by = null, $type = 'AND') {
 			$db = static::GetDb();
 			$tbl_name = static::$table_name;
 			$sql = 'SELECT * FROM '.$db->DelimTable($tbl_name).' WHERE ';
@@ -23,7 +23,7 @@ namespace Core\Data {
 		
 			foreach( $params as $k => $v ) {
 				if( !$first )
-					$sql .= ' AND ';
+					$sql .= ' '.$type.' ';
 			
 				$first = false;
 			
@@ -36,7 +36,7 @@ namespace Core\Data {
 			return $db->ExecuteQuery($sql, $ps, get_called_class());
 		}
 		
-		public static function FindFirstBy($params, $order_by) {
+		public static function FindFirstBy($params, $order_by = null, $type = 'AND') {
 			$rows = static::FindAllBy($params, $order_by);
 			
 			if( !isset($rows) || !is_array($rows) || count($rows) <= 1 )
@@ -45,8 +45,8 @@ namespace Core\Data {
 			return $rows[0];
 		}
 		
-		public static function FindOnlyBy($params) {
-			$rows = static::FindAllBy($params);
+		public static function FindOnlyBy($params, $type = 'AND') {
+			$rows = static::FindAllBy($params, null, $type);
 			
 			if( !isset($rows) || !is_array($rows) || count($rows) != 1 )
 				return null;

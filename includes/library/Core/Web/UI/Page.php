@@ -80,7 +80,7 @@ namespace Core\Web\UI
 			$this->JSFiles[] = array(
 				'cond' => $cond,
 				'path' => $path,
-				'group' => null
+				'group' => $group
 			);
 		}
 		
