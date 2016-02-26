@@ -110,7 +110,7 @@ namespace Core\Handlers
 						$message .= '&'.urlencode($name).'='.urlencode($value);
 					}
 				}
-
+				
 				$hash = hash_hmac('md5', $message, $App->Config->API->auth_key);
 
 				if( $signature != $hash )
