@@ -269,6 +269,9 @@ namespace Core\Data {
 		}
 		
 		public function __isset($name) {
+			if( !isset($this->data) || !is_array($this->data) )
+				return false;
+			
 			if( array_key_exists($name, $this->data) )
 				return isset($this->data[$name]);
 
