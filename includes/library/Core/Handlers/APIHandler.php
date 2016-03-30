@@ -154,6 +154,8 @@ namespace Core\Handlers
 					{
 						if( !$arg->isDefaultValueAvailable() )
 							return array('error' => true, 'statusCode' => 400, 'message' => 'Missing required parameter ['.$name.'].');
+						
+						$args_to_pass[] = $arg->getDefaultValue();
 					}
 					else
 						$args_to_pass[] = $val;
