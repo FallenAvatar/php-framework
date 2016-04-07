@@ -49,6 +49,7 @@ namespace Core\Handlers
 		
 		protected function GetResponse($App)
 		{
+			$headers = getallheaders();
 			$pos = strrpos($this->path,'/');
 			if( $pos === false )
 				return array('error' => true, 'statusCode' => 404, 'message' => 'Invalid API Path.');
@@ -70,6 +71,11 @@ namespace Core\Handlers
 			$method_info = new \ReflectionMethod($class,$method);
 			$method_info->setAccessible(true);
 			
+			$aj = 'application/json';
+			$is_ajax = false;
+			if( $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest' || ($_SERVER['CONTENT_TYPE'] == $aj || substr($_SERVER['CONTENT_TYPE'], 0, strlen($aj)+1) == $aj.';') )
+				$is_ajax = true;
+			
 			$inst = null;
 
 			if( !$method_info->isStatic() )
@@ -80,41 +86,45 @@ namespace Core\Handlers
 			}
 			else if( $method_info->isProtected() )
 			{
-				$signature = strtolower($_GET['signature']);
+				$key = $headers['X-Api-Key'];
+				$signature = $headers['X-Api-Auth'];
 				
 				if( !isset($signature) || trim($signature) == '' )
 					return array('error' => true, 'statusCode' => 403, 'message' => 'The requested API method requires a signature to be passed in the query string.');
 
 				$message = '';
-				foreach( $_GET as $name => $value )
-				{
-					if( $name == 'signature' )
-						continue;
-
-					$message .= '&'.urlencode($name).'='.urlencode($value);
-				}
-				
-				if( $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest' && $_SERVER['CONTENT_TYPE'] == 'application/json' )
+				if( $is_ajax )
 				{
 					$input = fopen('php://input','r');
 					$json_string = fgets($input);
-					$message .= "\n\n".$json_string;
+					$message = $json_string;
 				}
 				else
 				{
-					foreach( $_POST as $name => $value )
-					{
-						if( $name == 'signature' )
-							continue;
-
-						$message .= '&'.urlencode($name).'='.urlencode($value);
+					$first = true;
+					foreach( $_GET as $name => $value ) {
+						if( !$first )
+							$message .= '&';
+						$message .= urlencode($name).'='.urlencode($value);
+						$first = false;
+					}
+					foreach( $_POST as $name => $value ) {
+						if( !$first )
+							$message .= '&';
+						$message .= urlencode($name).'='.urlencode($value);
+						$first = false;
 					}
 				}
 				
-				$hash = hash_hmac('md5', $message, $App->Config->API->auth_key);
+				$secret_class = $App->Config->API->security_handler;
+				
+				$secret_key = call_user_func_array(array($secret_class, 'GetSecretKey'), array($key));
+				//return array('here2' => $secret_key);
+				$hash = hash('sha256', $message.$secret_key);
 
 				if( $signature != $hash )
 					return array('error' => true, 'statusCode' => 403, 'message' => 'Invalid signature supplied.');
+				
 			}
 			else if( $method_info->isPrivate() )
 			{
@@ -127,8 +137,7 @@ namespace Core\Handlers
 			$args_to_pass = array();
 			
 			$input = $_POST;
-			$aj = 'application/json';
-			if( $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest' && ($_SERVER['CONTENT_TYPE'] == $aj || substr($_SERVER['CONTENT_TYPE'], 0, strlen($aj)+1) == $aj.';') )
+			if( $is_ajax )
 			{
 				$input = fopen('php://input','r');
 				$json_string = fgets($input);
@@ -154,8 +163,6 @@ namespace Core\Handlers
 					{
 						if( !$arg->isDefaultValueAvailable() )
 							return array('error' => true, 'statusCode' => 400, 'message' => 'Missing required parameter ['.$name.'].');
-						
-						$args_to_pass[] = $arg->getDefaultValue();
 					}
 					else
 						$args_to_pass[] = $val;

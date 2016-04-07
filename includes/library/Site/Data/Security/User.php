@@ -43,6 +43,33 @@ namespace Site\Data\Security
 				'foreign_id' => 'role_id',
 				'class' => '\Site\Data\Security\Role'
 			),
+			/*'M2M' => array(
+				'plural_name' => 'M2Ms',
+				'table' => 'lookup_table',
+				'local_id' => 'this_id',
+				'foreign_id' => 'that_id',
+				'class' => 'OtherClass'
+			),
+			'O2M' => array(
+				'plural_name' => 'O2Ms',
+				'foreign_id' => 'this_id',
+				'class' => 'OtherClass'
+			),
+			'M2O' => array(
+				'plural_name' => 'M2Os',
+				'local_id' => 'that_id',
+				'class' => 'OtherClass'
+			),
+			'O2O' => array(
+				'rel_type' => 'o2o',
+				'local_id' => 'that_id',
+				'class' => 'OtherClass'
+			),
+			'O2O2' => array(
+				'rel_type' => 'o2o',
+				'foreign_id' => 'this_id',
+				'class' => 'OtherClass'
+			),*/
 		);
 	}
 }

@@ -72,6 +72,7 @@
 		}
 	},
 	"Site": {
-		"base_url": "/"
+		"base_url": "/",
+		"upload_dir": "/uploads/"
 	}
 }

@@ -7,6 +7,7 @@ namespace Core\Data
 		public static function HandleParameter($name, $value, $db, &$params)
 		{
 			$ret = $db->DelimColumn( $name );
+			$compare_type = '=';
 			if( isset($value) && $value instanceof SpecialValue )
 			{
 				switch( $value->Name )
@@ -23,10 +24,16 @@ namespace Core\Data
 				default:
 					throw new \Exception( 'Unhandled Special Value ['.get_class($value).'].' );
 				}
+			} else if( isset($value) && is_array($value) && count($value) == 2 ) {
+				$allowed = array('=','<','<=','>','>=','<>','!=');
+				if( in_array($value[0], $allowed) ) {
+					$compare_type = $value[0];
+					$value = $value[1];
+				}
 			}
 
 			$pname = 'auto_'.$name.'_'.count($params);
-			$ret .= ' = ' . $db->DelimParameter( $pname );
+			$ret .= ' '.$compare_type.' ' . $db->DelimParameter( $pname );
 
 			$params[$pname] = $value;
 

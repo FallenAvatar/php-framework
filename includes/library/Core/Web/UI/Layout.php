@@ -10,6 +10,8 @@ namespace Core\Web\UI
 		protected $Path;
 		public function _getPath() { return $this->Path; }
 		
+		public function _getTitle() { return $this->Page->Title; }
+		
 		protected $Page;
 		protected $content;
 		

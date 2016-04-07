@@ -2,7 +2,7 @@
 
 namespace Site\API\Admin\Forms\Security {
 	class User extends \Core\Web\BaseObject {
-		public function Edit($username, $email, $group, $password = null, $confirm_password = null, $id = null) {
+		public function Edit($username, $email, $password = null, $confirm_password = null, $id = null) {
 			if( isset($id) && trim($id) == '' )
 				$id = null;
 			
@@ -19,8 +19,6 @@ namespace Site\API\Admin\Forms\Security {
 				else
 					$pw = $password;
 				$user = \Site\Systems\Security::CreateUser($username, $pw, $email, $err);
-				$user->AddGroup($group);
-				
 				//TODO: Email password
 				
 				if( !isset($user) )
@@ -37,9 +35,6 @@ namespace Site\API\Admin\Forms\Security {
 				$user->email = $email;
 				
 				$user->Save();
-				
-				$user->ClearGroups();
-				$user->AddGroup($group);
 				
 				if( isset($password) ) {
 					$user->password = $password;

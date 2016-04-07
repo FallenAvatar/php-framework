@@ -1,7 +1,7 @@
 <?php
 
 namespace Core\Data {
-	abstract class ActiveRecord extends \Core\Object {
+	abstract class ActiveRecord extends \Core\Object implements \JsonSerializable {
 		public static function FindAll($order_by = null) {
 			$db = static::GetDb();
 			$tbl_name = static::$table_name;
@@ -244,6 +244,10 @@ namespace Core\Data {
 			return static::GetTable()->Delete($sql, $params);
 		}
 		
+		public function jsonSerialize() {
+			return $this->data;
+		}
+		
 		public function __get($name) {
 			if( method_exists($this,'_get'.$name) )
 				return call_user_func_array(array($this,'_get'.$name),array());
@@ -327,7 +331,7 @@ namespace Core\Data {
 			}
 			
 			if( !isset($r) )
-				throw new Exception('No relationship with name ['.$rel_name.'] found on class ['.get_called_class().'].');
+				throw new \Exception('No relationship with name ['.$rel_name.'] found on class ['.get_called_class().'].');
 			
 			$db = static::GetDb();
 		
