@@ -1,0 +1,6 @@
+{
+	"autoloader": "./autoload.php",
+	"namespaces": {
+		"Core": "Core"
+	}
+}

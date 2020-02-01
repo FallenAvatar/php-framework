@@ -1,0 +1,7 @@
+[DEBUG] Parsed Args = Array
+(
+    [log] => 3
+)
+
+[INFO] Processing ns [\Core] in dir [D:\Projects\ThisGuys\Framework\PHP\php-framework\includes\library\Core]
+[DEBUG] Test Debug Log
