@@ -1,43 +1,52 @@
 <?php
 
-namespace Core\Handlers {
-	class StaticFileHandler implements \Core\Handlers\IRequestHandler {
-		protected $url;
-		protected $path;
-		protected $ext;
-		
-		protected $mime_types = array(
-			'css' => 'text/css',
-			'xml' => 'text/xml',
-			'json' => 'application/json',
-			'html' => 'text/html'
-		);
-		
-		public function CanHandleRequest($App) {
-			$this->url = $App->Request->Url->Path;
-			$this->ext = substr($this->url, strrpos($this->url,'.')+1);
-			$this->path = str_replace('/', DS, $this->url);
-			
-			if( !in_array($this->ext, array_keys($this->mime_types)) )
-				return false;
-			
-			if( strpos($this->path, $App->Dirs->WebRoot) === false )
-				$this->path = substr($App->Dirs->WebRoot,0,strlen($this->Dirs->WebRoot)-1).$this->path;
-			
-			$this->path = \Core\IO\Path::Combine($App->Dirs->DocumentRoot,$this->path);
-			
-			if( !is_file($this->path) )
-				return false;
-			
-			return true;
-		}
+declare(strict_types=1);
 
-		public function ExecuteRequest($App) {
-			$mt = 'application/octet-stream';
-			if( isset($this->mime_types[$this->ext]) )
-				$mt = $this->mime_types[$this->ext];
-			header("Content-type: ".$mt);
-			readfile($this->path);
-		}
+namespace Core\Handlers;
+
+class StaticFileHandler implements \Core\Handlers\IRequestHandler {
+	protected static array $ct_map = [
+			/* CSS */
+			'css' => 'text/css',
+			'scss' => 'text/css',
+
+			/* JS */
+			'js' => 'application/javascript',
+			'jsp' => 'application/javascript',
+			'json' => 'application/json',
+
+			/* HTML */
+			'htm' => 'application/html',
+			'html' => 'application/html'
+		];
+
+	private string $abs_path;
+	private string $ext;
+
+	public function CanHandleRequest(\Core\Application $App): bool {
+		$this->abs_path = $App->Request->Url->Path;
+		$rel_path = $this->abs_path;
+
+		if( strpos($this->abs_path, $App->Urls->WebRoot) === false )
+			$this->abs_path = substr($App->Urls->WebRoot,0,strlen($App->Urls->WebRoot)-1).$this->abs_path;
+
+		if( DS != '/' )
+			$this->abs_path = str_replace('/', DS, $this->abs_path);
+
+		$this->abs_path = \Core\IO\Path::Combine($App->Dirs->DocumentRoot, $this->abs_path);
+		$this->ext = substr($rel_path, strrpos($rel_path, '.')+1);
+
+		if( !in_array($this->ext, array_keys(static::$ct_map)) )
+			return false;
+
+		if( is_file($this->abs_path) )
+			return true;
+
+		return false;
+	}
+
+	public function ExecuteRequest(\Core\Application $App, $data): void {
+		header('Content-Type: '.static::$ct_map[$this->ext]);
+		readfile($this->abs_path);
 	}
 }

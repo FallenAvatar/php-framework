@@ -1,17 +1,13 @@
-<?
+<?php
 
-namespace Core\Data
-{
-	class Helper
-	{
-		public static function HandleParameter($name, $value, $db, &$params)
-		{
+namespace Core\Data {
+	class Helper {
+		public static function HandleParameter($name, $value, $db, &$params) {
 			$ret = $db->DelimColumn( $name );
-			$compare_type = '=';
-			if( isset($value) && $value instanceof SpecialValue )
-			{
-				switch( $value->Name )
-				{
+			$pname = 'auto_'.$name.'_'.count($params);
+			
+			if( isset($value) && $value instanceof SpecialValue ) {
+				switch( $value->Name ) {
 				case 'is-null':
 					$ret .= ' IS NULL';
 					return $ret;
@@ -21,35 +17,37 @@ namespace Core\Data
 				case "lit-value":
 					$ret .= ' = ' . $value->TextValue;
 					return $ret;
+				case "func-value":
+					$ret .= ' = ' . $value->TextValue;
+					$params[$value->ParamName] = $value->ParamValue;
+					return $ret;
+				case "like":
+					$ret .= ' LIKE ' . $db->DelimParameter($pname);
+					$value = $value->Value;
+					break;
 				default:
 					throw new \Exception( 'Unhandled Special Value ['.get_class($value).'].' );
 				}
-			} else if( isset($value) && is_array($value) && count($value) == 2 ) {
-				$allowed = array('=','<','<=','>','>=','<>','!=');
-				if( in_array($value[0], $allowed) ) {
-					$compare_type = $value[0];
-					$value = $value[1];
-				}
+			} else if( !isset($value) ) {
+				$ret .= ' IS NULL';
+				return $ret;
+			} else {
+				$ret .= ' = ' . $db->DelimParameter( $pname );
 			}
-
-			$pname = 'auto_'.$name.'_'.count($params);
-			$ret .= ' '.$compare_type.' ' . $db->DelimParameter( $pname );
-
+			
 			$params[$pname] = $value;
 
 			return $ret;
 		}
 		
-		public static function ParseOrderBy( $db, $order_by )
-		{
+		public static function ParseOrderBy( $db, $order_by ) {
 			if( !isset($order_by) )
 				return '';
 
 			$ret = ' ORDER BY ';
 			$first = true;
 
-			foreach( $order_by as $o )
-			{
+			foreach( $order_by as $o ) {
 				if( !isset($o) || trim($o) == '' )
 					continue;
 
@@ -61,12 +59,9 @@ namespace Core\Data
 				$dir = 'ASC';
 				$name = $o;
 
-				if( $o[0] == '+' )
-				{
+				if( $o[0] == '+' ) {
 					$name = substr($o, 1 );
-				}
-				else if( $o[0] == '-' )
-				{
+				} else if( $o[0] == '-' ) {
 					$dir = 'DESC';
 					$name = substr($o, 1 );
 				}

@@ -1,22 +1,24 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-	<base href="<?= $this->App->Config->Site->base_url ?>" />
-
-	<title><?= ((isset($this->Title) && trim($this->Title) != '') ? ' - '.$this->Title : '') ?></title>
-
-	<link rel="stylesheet" type="text/css" href="css/reset.css" />
-	<link rel="stylesheet" type="text/css" href="css/layout.css" />
-	<link rel="stylesheet" type="text/css" href="css/styles.css" />
+	<title>ThisGals LLC :: PHP Framework<?= ((isset($this->Title) && trim($this->Title) != '') ? ' - '.$this->Title : '') ?></title>
+	
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" /> 
+	<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0" />
+	
+	<link rel="stylesheet" href="/css/reset.css">
+	<link rel="stylesheet" href="/css/layout.css">
+	<link rel="stylesheet" href="/css/styles.css">
 	<?= $this->GetStyleSheets() ?>
-
-	<script type="text/javascript" src="js/lib/jquery.min.js"></script>
-	<script type="text/javascript" src="js/site.js"></script>
-	<?= $this->GetJSFiles() ?>
-
+	
 	<?= $this->GetStyles() ?>
+	
+	<script src="/js/lib/jquery.min.js"></script>
+	<script src="/js/site.js"></script>
+	
+	<?= $this->GetJSFiles() ?>
 </head>
 <body>
 	<?= $this->GetContent('default') ?>

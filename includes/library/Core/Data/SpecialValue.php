@@ -1,16 +1,13 @@
-<?
+<?php
 
-namespace Core\Data
-{
-	class SpecialValue extends \Core\Object
-	{
+namespace Core\Data {
+	class SpecialValue extends \Core\Obj {
 		public static $isNull = null;
 		public static $isNotNull = null;
 		
 		protected $name;
 		public function _getName() { return $this->name; }
-		public function __construct($name)
-		{
+		public function __construct($name) {
 			$this->name = $name;
 		}
 	}

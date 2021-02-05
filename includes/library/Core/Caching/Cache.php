@@ -1,70 +1,62 @@
 <?php
 
-namespace Core\Caching
-{
-	class Cache extends \Core\Object
-	{
-		public static function CacheArray($path, $arr)
-		{
-			$cache = new Cache($path);
-			$cache->settings = $arr;
-			$cache->Save();
-		}
+declare(strict_types=1);
 
-		public static function CacheLoad($path)
-		{
-			$cache = new Cache($path);
-			return $cache->settings;
-		}
+namespace Core\Caching;
 
-		private $file_path;
-		private $settings;
-		public function __construct($path)
-		{
-			$app = \Core\Application::GetInstance();
+class Cache extends \Core\Obj {
+	public static function CacheArray(string $path, array $arr): void {
+		$cache = new Cache($path);
+		$cache->settings = $arr;
+		$cache->Save();
+	}
 
-			$cache_dir = \Core\IO\Path::Combine($app->Dirs->Data,'cache');
+	public static function CacheLoad(string $path): array {
+		$cache = new Cache($path);
+		return $cache->settings;
+	}
 
-			$path_parts = explode('\\',$path);
-			$fn = array_pop($path_parts);
-			
-			foreach($path_parts as $part)
-				$cache_dir = \Core\IO\Path::Combine($cache_dir,$part);
+	private string $file_path;
+	private ?array $settings;
+	public function __construct(string $path) {
+		$app = \Core\Application::Get();
 
-			$this->file_path = \Core\IO\Path::Combine($cache_dir,$fn.'.json');
+		$cache_dir = \Core\IO\Path::Combine($app->Dirs->Data,'cache');
 
-			if( !file_exists($this->file_path) )
-				$this->settings = null;
-			else
-				$this->settings = json_decode(file_get_contents($this->file_path), true);
-		}
+		$path_parts = explode('\\',$path);
+		$fn = array_pop($path_parts);
 
-		public function Save()
-		{
-			if( !is_dir(dirname($this->file_path)) )
-				mkdir(dirname($this->file_path), 0777, true);
-				
-			file_put_contents($this->file_path, json_encode($this->settings));
-		}
+		foreach($path_parts as $part)
+			$cache_dir = \Core\IO\Path::Combine($cache_dir,$part);
 
-		public function __get($name)
-		{
-			return $this->settings->$name;
-		}
+		$this->file_path = \Core\IO\Path::Combine($cache_dir,$fn.'.json');
 
-		public function __set($name, $value)
-		{
-			$this->settings->$name = $value;
-		}
-	
-		public function __isset($name)
-		{
-			return isset($this->settings->$name);
-		}
+		if( !file_exists($this->file_path) )
+			$this->settings = null;
+		else
+			$this->settings = json_decode(file_get_contents($this->file_path), true);
+	}
 
-		public function __unset($name)
-		{
-			unset($this->settings->$name);
-		}
+	public function Save(): void {
+		if( !is_dir(dirname($this->file_path)) )
+			mkdir(dirname($this->file_path), 0777, true);
+
+		file_put_contents($this->file_path, json_encode($this->settings));
+	}
+
+	public function __get(string $name) {
+		return $this->settings[$name];
+	}
+
+	public function __set(string $name, $value): void {
+		$this->settings[$name] = $value;
+	}
+
+	public function __isset(string $name): bool {
+		return isset($this->settings[$name]);
+	}
+
+	public function __unset(string $name): void {
+		unset($this->settings[$name]);
 	}
 }

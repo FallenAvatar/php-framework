@@ -2,11 +2,12 @@
 /**
  * SCSSPHP
  *
- * @copyright 2012-2015 Leaf Corcoran
+ * @copyright 2012-2014 Leaf Corcoran
  *
+ * @license http://opensource.org/licenses/gpl-license GPL-3.0
  * @license http://opensource.org/licenses/MIT MIT
  *
- * @link http://leafo.github.io/scssphp
+ * @link http://leafo.net/scssphp
  */
 
 namespace Leafo\ScssPhp\Formatter;
@@ -20,9 +21,6 @@ use Leafo\ScssPhp\Formatter;
  */
 class Crunched extends Formatter
 {
-    /**
-     * {@inheritdoc}
-     */
     public function __construct()
     {
         $this->indentLevel = 0;
@@ -34,32 +32,14 @@ class Crunched extends Formatter
         $this->assignSeparator = ':';
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function indentStr($n = 0)
     {
         return '';
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function stripSemicolon(&$lines)
-    {
-        if (($count = count($lines))
-            && substr($lines[$count - 1], -1) === ';'
-        ) {
-            $lines[$count - 1] = substr($lines[$count - 1], 0, -1);
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function blockLines($inner, $block)
     {
-        $glue = $this->break . $inner;
+        $glue = $this->break.$inner;
 
         foreach ($block->lines as $index => $line) {
             if (substr($line, 0, 2) === '/*') {
@@ -69,7 +49,7 @@ class Crunched extends Formatter
 
         echo $inner . implode($glue, $block->lines);
 
-        if (! empty($block->children)) {
+        if (!empty($block->children)) {
             echo $this->break;
         }
     }

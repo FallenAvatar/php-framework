@@ -2,17 +2,17 @@
 /**
  * SCSSPHP
  *
- * @copyright 2012-2015 Leaf Corcoran
+ * @copyright 2012-2014 Leaf Corcoran
  *
+ * @license http://opensource.org/licenses/gpl-license GPL-3.0
  * @license http://opensource.org/licenses/MIT MIT
  *
- * @link http://leafo.github.io/scssphp
+ * @link http://leafo.net/scssphp
  */
 
 namespace Leafo\ScssPhp;
 
 use Leafo\ScssPhp\Compiler;
-use Leafo\ScssPhp\Version;
 
 /**
  * SCSS server
@@ -21,26 +21,6 @@ use Leafo\ScssPhp\Version;
  */
 class Server
 {
-    /**
-     * @var boolean
-     */
-    private $showErrorsAsCSS;
-
-    /**
-     * @var string
-     */
-    private $dir;
-
-    /**
-     * @var string
-     */
-    private $cacheDir;
-
-    /**
-     * @var \Leafo\ScssPhp\Compiler
-     */
-    private $scss;
-
     /**
      * Join path components
      *
@@ -138,6 +118,10 @@ class Server
         if (is_readable($metadataName)) {
             $metadata = unserialize(file_get_contents($metadataName));
 
+            if ($metadata['etag'] === $etag) {
+                return false;
+            }
+
             foreach ($metadata['imports'] as $import) {
                 if (filemtime($import) > $mtime) {
                     return true;
@@ -202,7 +186,7 @@ class Server
         $css     = $this->scss->compile(file_get_contents($in), $in);
         $elapsed = round((microtime(true) - $start), 4);
 
-        $v    = Version::VERSION;
+        $v    = Compiler::$VERSION;
         $t    = @date('r');
         $css  = "/* compiled by scssphp $v on $t (${elapsed}s) */\n\n" . $css;
         $etag = md5($css);
@@ -217,90 +201,6 @@ class Server
         );
 
         return array($css, $etag);
-    }
-
-    /**
-     * Format error as a pseudo-element in CSS
-     *
-     * @param \Exception $error
-     *
-     * @return string
-     */
-    protected function createErrorCSS($error)
-    {
-        $message = str_replace(
-            array("'", "\n"),
-            array("\\'", "\\A"),
-            $error->getfile() . ":\n\n" . $error->getMessage()
-        );
-
-        return "body { display: none !important; }
-                html:after {
-                    background: white;
-                    color: black;
-                    content: '$message';
-                    display: block !important;
-                    font-family: mono;
-                    padding: 1em;
-                    white-space: pre;
-                }";
-    }
-
-    /**
-     * Render errors as a pseudo-element within valid CSS, displaying the errors on any
-     * page that includes this CSS.
-     *
-     * @param boolean $show
-     */
-    public function showErrorsAsCSS($show = true)
-    {
-        $this->showErrorsAsCSS = $show;
-    }
-
-    /**
-     * Compile .scss file
-     *
-     * @param string $in  Input file (.scss)
-     * @param string $out Output file (.css) optional
-     *
-     * @return string|bool
-     */
-    public function compileFile($in, $out = null)
-    {
-        if (! is_readable($in)) {
-            throw new \Exception('load error: failed to find ' . $in);
-        }
-
-        $pi = pathinfo($in);
-
-        $this->scss->addImportPath($pi['dirname'] . '/');
-
-        $compiled = $this->scss->compile(file_get_contents($in), $in);
-
-        if ($out !== null) {
-            return file_put_contents($out, $compiled);
-        }
-
-        return $compiled;
-    }
-
-    /**
-     * Check if file need compiling
-     *
-     * @param string $in  Input file (.scss)
-     * @param string $out Output file (.css)
-     *
-     * @return bool
-     */
-    public function checkedCompile($in, $out)
-    {
-        if (! is_file($out) || filemtime($in) > filemtime($out)) {
-            $this->compileFile($in, $out);
-
-            return true;
-        }
-
-        return false;
     }
 
     /**
@@ -331,17 +231,10 @@ class Server
                     echo $css;
 
                 } catch (\Exception $e) {
-                    if ($this->showErrorsAsCSS) {
-                        header('Content-type: text/css');
+                    header($protocol . ' 500 Internal Server Error');
+                    header('Content-type: text/plain');
 
-                        echo $this->createErrorCSS($e);
-                    } else {
-                        header($protocol . ' 500 Internal Server Error');
-                        header('Content-type: text/plain');
-
-                        echo 'Parse error: ' . $e->getMessage() . "\n";
-                    }
-
+                    echo 'Parse error: ' . $e->getMessage() . "\n";
                 }
 
                 return;
@@ -377,38 +270,8 @@ class Server
         header($protocol . ' 404 Not Found');
         header('Content-type: text/plain');
 
-        $v = Version::VERSION;
+        $v = Compiler::$VERSION;
         echo "/* INPUT NOT FOUND scss $v */\n";
-    }
-
-    /**
-     * Based on explicit input/output files does a full change check on cache before compiling.
-     *
-     * @param string  $in
-     * @param string  $out
-     * @param boolean $force
-     *
-     * @return string Compiled CSS results
-     *
-     * @throws \Exception
-     */
-    public function checkedCachedCompile($in, $out, $force = false)
-    {
-        if (! is_file($in) || ! is_readable($in)) {
-            throw new \Exception('Invalid or unreadable input file specified.');
-        }
-
-        if (is_dir($out) || ! is_writable(file_exists($out) ? $out : dirname($out))) {
-            throw new \Exception('Invalid or unwritable output file specified.');
-        }
-
-        if ($force || $this->needsCompile($in, $out, $etag)) {
-            list($css, $etag) = $this->compile($in, $out);
-        } else {
-            $css = file_get_contents($out);
-        }
-
-        return $css;
     }
 
     /**
@@ -422,23 +285,22 @@ class Server
     {
         $this->dir = $dir;
 
-        if (! isset($cacheDir)) {
+        if (!isset($cacheDir)) {
             $cacheDir = $this->join($dir, 'scss_cache');
         }
 
         $this->cacheDir = $cacheDir;
 
-        if (! is_dir($this->cacheDir)) {
+        if (!is_dir($this->cacheDir)) {
             mkdir($this->cacheDir, 0755, true);
         }
 
-        if (! isset($scss)) {
+        if (!isset($scss)) {
             $scss = new Compiler();
             $scss->setImportPaths($this->dir);
         }
 
         $this->scss = $scss;
-        $this->showErrorsAsCSS = false;
     }
 
     /**

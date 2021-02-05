@@ -1,39 +1,32 @@
 <?php
 
-namespace Core\Data\Statement
-{
-	class Select extends \Core\Object /*implements IStatement*/
-	{
+namespace Core\Data\Statement {
+	class Select extends \Core\Obj {
 		protected $_db;
 		protected $_tbl;
 		protected $_cols;
 		protected $_where;
 		protected $_params;
 		
-		public function __construct($db, $tbl, $cols = null)
-		{
+		public function __construct($db, $tbl, $cols = null) {
 			$this->_db=$db;
 			$this->_tbl=is_string($tbl) ? $tbl : $tbl->Name;
 			$this->_cols=$cols;
 			$this->_where=null;
-			$this->_params=array();
+			$this->_params=[];
 		}
 		
-		public function Where($where, $ps)
-		{
+		public function Where($where, $ps) {
 			$this->_where = $where;
 			$this->_params = array_merge($this->_params, $ps);
 		}
 		
-		public function Execute($rowClass = null)
-		{
+		public function Execute($rowClass = null) {
 			$sql='SELECT ';
 			
-			if( isset($this->_cols) )
-			{
+			if( isset($this->_cols) ) {
 				$first = true;
-				foreach( $this->_cols as $col )
-				{
+				foreach( $this->_cols as $col ) {
 					if( !$first )
 						$sql .= ', ';
 						
@@ -51,8 +44,7 @@ namespace Core\Data\Statement
 					if( isset($alias) )
 						$sql .= ' AS '.$this->_db->DelimColumn($alias);
 				}
-			}
-			else
+			} else
 				$sql .= '*';
 			
 			$sql .= ' FROM '.$this->_db->DelimTable($this->_tbl);

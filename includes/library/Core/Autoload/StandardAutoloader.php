@@ -1,59 +1,106 @@
 <?php
 
-namespace Core\Autoload
-{
-	class StandardAutoloader
-	{
-		protected static $libPath;
-		
-		public static function Init($libPath)
-		{
-			self::$libPath = $libPath;
-			spl_autoload_register('\Core\Autoload\StandardAutoloader::LoadClass');
-		}
-		
-		public static function ClassExists($name)
-		{
-			return (self::IsClassLoaded($name) || self::CanLoadClass($name));
-		}
-		
-		public static function IsClassLoaded($name)
-		{
-			$classes = get_declared_classes();
+declare(strict_types=1);
 
-			if( $name[0] == '\\' )
-				$name = substr($name,1);
+namespace Core\Autoload;
 
-			foreach($classes as $class)
-				if( $class == $name )
-					return true;
+class StandardAutoloader {
+	use \Core\Traits\TSingleton;
 
-			return false;
+	public static function Register($ns, $libPath) {
+		static::Get()->RegisterNS($ns, $libPath);
+	}
+
+	private array $paths;
+	public function __construct() {
+		$this->paths = [];
+
+		\spl_autoload_register([$this,'LoadClass'], true, true);
+	}
+
+	public function RegisterNS(string $ns, string $libPath): void {
+		if( substr($ns, strlen($ns)-1) != '\\' )
+			$ns .= '\\';
+
+		if( $ns[0] == '\\' )
+			$ns = substr($ns, 1);
+
+		if( isset($this->paths[$ns]) )
+			return;
+
+		if( substr($libPath, strlen($libPath)-1) != DS )
+			$libPath .= DS;
+
+		$this->paths[$ns] = $libPath;
+	}
+
+	public function ClassExists(string $class_name): bool {
+		return ($this->IsClassLoaded($class_name) || $this->CanLoadClass($class_name));
+	}
+
+	public function IsClassLoaded(string $class_name): bool {
+		$classes = get_declared_classes();
+		if( $class_name[0] == '\\' )
+			$class_name = substr($class_name, 1);
+
+		if( in_array($class_name, $classes) )
+			return true;
+
+		return false;
+	}
+
+	public function CanLoadClass(string $class_name): bool {
+		if( $class_name[0] == '\\' )
+			$class_name = substr($class_name, 1);
+
+		$cn_path = $class_name;
+		if( '\\' != DS )
+			$cn_path = str_replace('\\', DS, $cn_path);
+
+		foreach($this->paths as $ns => $libPath) {
+			if( strlen($class_name) < strlen($ns) || substr($class_name, 0, strlen($ns)) != $ns )
+				continue;
+
+			$cn = substr($cn_path, strlen($ns));
+
+			if( '\\' != DS )
+				$cn = str_replace('\\', DS, $cn);
+
+			$p = $libPath.$cn.".php";
+
+			if( !is_file($p) )
+				continue;
+
+			return true;
 		}
 
-		public static function CanLoadClass($name)
-		{
-			$path = self::$libPath . str_replace("\\",DS,$name) . '.php';
-			
-			return (file_exists($path) && is_file($path));
-		}
-		
-		public static function LoadClass($className)
-		{
-			$path = self::$libPath . str_replace("\\",DS,$className) . '.php';
-			
-			if( file_exists($path) && is_file($path) )
-			{
-				include_once($path);
-				return;
-			}
-			
-			$loaders = spl_autoload_functions();
-			
-			if( count($loaders) > 1 || (is_array($loaders[0]) && count($loaders[0]) > 1) )
-				return false;
-			
-			throw new \Core\Autoload\Exception('Unable to load class ['.$className.'], expected path was ['.$path.'].');
+		return false;
+	}
+
+	public function LoadClass(string $class_name): void {
+		if( $class_name[0] == '\\' )
+			$class_name = substr($class_name, 1);
+
+		$cn_path = $class_name;
+		if( '\\' != DS )
+			$cn_path = str_replace('\\', DS, $cn_path);
+
+		foreach($this->paths as $ns => $libPath) {
+			if( strlen($class_name) < strlen($ns) || substr($class_name, 0, strlen($ns)) != $ns )
+				continue;
+
+			$cn = substr($cn_path, strlen($ns));
+
+			if( '\\' != DS )
+				$cn = str_replace('\\', DS, $cn);
+
+			$p = $libPath.$cn.".php";
+
+			if( !is_file($p) )
+				continue;
+
+			require($p);
+			break;
 		}
 	}
 }

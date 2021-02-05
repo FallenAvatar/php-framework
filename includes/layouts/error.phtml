@@ -1,0 +1,25 @@
+<?php declare(strict_types=1); ?>
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<base href="<?= $this->App->Config->Site->base_url ?>" />
+
+	<title><?= $this->App->Config->Site->title . ((isset($this->Title) && trim($this->Title) != '') ? ' - '.$this->Title : '') ?></title>
+
+	<link rel="stylesheet" type="text/css" href="css/reset.css" />
+	<link rel="stylesheet" type="text/css" href="css/layout.css" />
+	<link rel="stylesheet" type="text/css" href="css/error.css" />
+	<?= $this->GetStyleSheets() ?>
+
+	<script type="text/javascript" src="js/lib/jquery.min.js"></script>
+	<script type="text/javascript" src="js/error.js"></script>
+	<?= $this->GetJSFiles() ?>
+
+	<?= $this->GetStyles() ?>
+</head>
+<body class="error-page">
+	<?= $this->GetContent('default') ?>
+</body>
+</html>

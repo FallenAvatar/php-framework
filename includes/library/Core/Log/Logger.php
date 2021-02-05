@@ -1,70 +1,63 @@
 <?php
 
-namespace Core\Log
-{
-	class Logger
-	{
-		protected $storages;
-		
-		public function __construct($storages)
-		{
-			if( is_array($storages) && count($storages) > 0 )
-				$this->storages = $storages;
-			else if( $storages instanceof \Core\Log\Storage\IStorage )
-				$this->storages = array($storages);
-			else
-				$this->storages = array();
-		}
-		
-		public function Log($level, $message, $source = null, $details = null)
-		{
-			if( !isset($source) )
-				$source = $this->getSourceInfo();
-			
-			foreach($this->storages as $s)
-				$s->Log($level, $message, $source, $details);
-		}
-		
-		private function getSourceInfo($depth = 2)
-		{
-			$bt = debug_backtrace(false, $depth);
-			
-			return array(
-				'file' => $bt[$depth-1]['file'],
-				'line' => $bt[$depth-1]['line'],
-				'class' => $bt[$depth-1]['class'],
-				'function' => $bt[$depth-1]['function'],
-				'type' => $bt[$depth-1]['type'],
-				'args' => $bt[$depth-1]['args']
-			);
-		}
-		
-		public function Debug($message, $details = null)
-		{
-			$source = $this->getSourceInfo();
-			
-			$this->Log(\Core\Log\LEVEL_DEBUG, $message, $source, $details);
-		}
-		
-		public function Info($message, $details = null)
-		{
-			$source = $this->getSourceInfo();
-			
-			$this->Log(\Core\Log\LEVEL_INFO, $message, $source, $details);
-		}
-		
-		public function Warn($message, $details = null)
-		{
-			$source = $this->getSourceInfo();
-			
-			$this->Log(\Core\Log\LEVEL_WARN, $message, $source, $details);
-		}
-		
-		public function Error($message, $details = null)
-		{
-			$source = $this->getSourceInfo();
-			
-			$this->Log(\Core\Log\LEVEL_ERROR, $message, $source, $details);
-		}
+declare(strict_types=1);
+
+namespace Core\Log;
+
+class Logger {
+	protected $storages;
+	protected $levels;
+
+	public function __construct(array $storages = [], $levels = -1) {
+		$this->storages = $storages;
+
+		if( $levels <= 0 )
+			$this->levels = LEVEL_DEBUG | LEVEL_INFO | LEVEL_WARN | LEVEL_ERROR;
+		else
+			$this->levels = $levels;
+	}
+
+	public function Log(int $level, string $message, string $source, $details = null): void {
+		if( ($level & $this->levels) == 0 )
+			return;
+
+		foreach($this->storages as $s)
+			$s->Log($level, $message, $source, $details);
+	}
+
+	private function getSourceInfo($depth = 2): array {
+		$bt = debug_backtrace(0, $depth);
+
+		return [
+			'file' => $bt[$depth-1]['file'],
+			'line' => $bt[$depth-1]['line'],
+			'class' => $bt[$depth-1]['class'],
+			'function' => $bt[$depth-1]['function'],
+			'type' => $bt[$depth-1]['type']
+		];
+	}
+
+	public function Debug(string $message, $details) {
+		$source = $this->getSourceInfo();
+
+		$this->Log(\Core\Log\LEVEL_DEBUG, $message, $source, $details);
+	}
+
+	public function Info(string $message, $details) {
+		$source = $this->getSourceInfo();
+
+		$this->Log(\Core\Log\LEVEL_INFO, $message, $source, $details);
+	}
+
+	public function Warn(string $message, $details) {
+		$source = $this->getSourceInfo();
+
+		$this->Log(\Core\Log\LEVEL_WARN, $message, $source, $details);
+	}
+
+	public function Error(string $message, $details) {
+		$source = $this->getSourceInfo();
+
+		$this->Log(\Core\Log\LEVEL_ERROR, $message, $source, $details);
 	}
 }

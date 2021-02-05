@@ -1,43 +1,36 @@
 <?php
 
-namespace Core\Data\Statement
-{
-	class Update extends \Core\Object
-	{
+namespace Core\Data\Statement {
+	class Update extends \Core\Obj {
 		protected $_db;
 		protected $_tbl;
 		protected $_vals;
 		protected $_where;
 		protected $_params;
 		
-		public function __construct($db, $tbl)
-		{
+		public function __construct($db, $tbl) {
 			$this->_db=$db;
 			$this->_tbl=is_string($tbl) ? $tbl : $tbl->Name;
-			$this->_vals=array();
+			$this->_vals=[];
 			$this->_where=null;
-			$this->_params=array();
+			$this->_params=[];
 		}
 		
-		public function Add($col,$val)
-		{
+		public function Add($col, $val) {
 			$this->_vals[$col]=$val;
 		}
 		
-		public function Where($where, $ps)
-		{
+		public function Where($where, $ps) {
 			$this->_where = $where;
 			$this->_params = array_merge($this->_params, $ps);
 		}
-			
-		public function Execute()
-		{
+		
+		public function Execute() {
 			$sql="UPDATE ".$this->_db->DelimTable($this->_tbl)." SET ";
-			$params = array();
+			$params = [];
 			
 			$first=true;
-			foreach( $this->_vals as $col => $val )
-			{
+			foreach( $this->_vals as $col => $val ) {
 				if( !$first )
 					$sql.=", ";
 

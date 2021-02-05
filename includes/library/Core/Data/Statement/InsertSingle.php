@@ -1,36 +1,29 @@
 <?php
 
-namespace Core\Data\Statement
-{
-	class InsertSingle extends \Core\Object
-	{
+namespace Core\Data\Statement {
+	class InsertSingle extends \Core\Obj {
 		protected $_db;
 		protected $_tbl;
 		protected $_vars;
 		
-		public function __construct($db, $tbl)
-		{
+		public function __construct($db, $tbl) {
 			$this->_db=$db;
 			$this->_tbl=is_string($tbl) ? $tbl : $tbl->Name;
-			$this->_vars=array();
+			$this->_vars=[];
 		}
 		
-		public function Add($col,$val)
-		{
+		public function Add($col,$val) {
 			$this->_vars[$col]=$val;
 		}
 		
-		public function Execute()
-		{
+		public function Execute() {
 			$sql="INSERT INTO ".$this->_db->DelimTable($this->_tbl)."(";
 			$sql2=") VALUES (";
-			$params=array();
+			$params=[];
 			
 			$first=true;
-			foreach( $this->_vars as $col => $val )
-			{
-				if( !$first )
-				{
+			foreach( $this->_vars as $col => $val ) {
+				if( !$first ) {
 					$sql.=", ";
 					$sql2.=", ";
 				}

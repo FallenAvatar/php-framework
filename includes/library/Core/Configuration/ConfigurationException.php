@@ -1,12 +1,11 @@
 <?php
 
-namespace Core\Configuration
-{
-	class ConfigurationException extends \Core\SystemException
-	{
-		public function __construct($msg = 'A configuration error has been detected.')
-		{
-			parent::__construct($msg);
-		}
+declare(strict_types=1);
+
+namespace Core\Configuration;
+
+class ConfigurationException extends \Core\Exception {
+	public function __construct(string $msg = 'A configuration error has been detected.') {
+		parent::__construct($msg);
 	}
 }
