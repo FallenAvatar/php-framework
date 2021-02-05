@@ -1,6 +1,6 @@
-ThisGuys' PHP Framework
+ThisGals' PHP Framework
 =============
 
-A simple php framework from http://thisguys.com/
+A simple php framework from http://thisgals.com/
 
 **WIP**
