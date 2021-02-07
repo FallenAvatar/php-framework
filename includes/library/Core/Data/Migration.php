@@ -8,16 +8,16 @@ class Migration extends \Core\Obj {
 		$inst->RunSteps();
 	}
 
-	protected $schema_version = 0;
-	public function _getSchemaVersion() { return $this->schema_version; }
-	protected $steps;
+	protected int $schema_version = 0;
+	public function _getSchemaVersion(): int { return $this->schema_version; }
+	protected array $steps;
 
-	protected function __construct($ver) {
+	protected function __construct(int $ver = 0) {
 		$this->schema_version = $ver;
 		$this->steps = [];
 	}
 
-	protected function AddStep($name, $func_or_file) {
+	protected function AddStep(string $name, $func_or_file): void {
 		if( is_string($func_or_file) && is_file(\Core\IO\Path::Combine(\Core\Application::Get()->Dirs->Data,'migrations',$func_or_file)) ) {
 			$this->steps[] = [
 				'name' => $name,
@@ -35,7 +35,7 @@ class Migration extends \Core\Obj {
 		}
 	}
 
-	public function RunSteps() {
+	public function RunSteps(): void {
 		$db = \Core\Data\Database::Get();
 		$db->StartTransaction();
 

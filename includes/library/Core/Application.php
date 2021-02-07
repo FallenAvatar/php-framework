@@ -313,7 +313,7 @@ class Application extends \Core\Obj {
 			}
 
 			if( isset($this->Config->PHP->ini) ) {
-				$values = $this->Config->PHP->ini->To[];
+				$values = $this->Config->PHP->ini->ToArray();
 				foreach($values as $name => $value) {
 					ini_set($name, $value);
 				}

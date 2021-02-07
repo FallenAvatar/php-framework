@@ -52,12 +52,12 @@ class DynObject extends Obj implements \IteratorAggregate {
 		unset($this->internalData[$name]);
 	}
 
-	public function To[]: array {
+	public function ToArray(): array {
 		$ret = [];
 
 		foreach($this->internalData as $k => $v) {
 			if( is_object($v) && ($v instanceof DynObject) )
-				$ret[$k] = $v->To[];
+				$ret[$k] = $v->ToArray();
 			else
 				$ret[$k] = $v;
 		}
@@ -66,7 +66,7 @@ class DynObject extends Obj implements \IteratorAggregate {
 	}
 
 	public function Merge(DynObject $other): DynObject {
-		$arrOther = $other->To[];
+		$arrOther = $other->ToArray();
 
 		$this->internalData = array_merge_recursive($this->internalData, $arrOther);
 

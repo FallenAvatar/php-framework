@@ -5,7 +5,7 @@ function crash($data): void {
 	exit();
 }
 
-function startsWith(string $str, int $start, bool $ci = false): bool {
+function startsWith(string $str, string $start, bool $ci = false): bool {
 	if( !isset($start) || trim($start) == '' )
 		return true;
 
@@ -28,7 +28,7 @@ function startsWith(string $str, int $start, bool $ci = false): bool {
 	return true;
 }
 
-function endsWith(string $str, int $end, bool $ci = false): bool {
+function endsWith(string $str, string $end, bool $ci = false): bool {
 	if( !isset($end) || trim($end) == '' )
 		return true;
 

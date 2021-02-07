@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Core\Log;
 
 class Logger {
-	protected $storages;
-	protected $levels;
+	protected array $storages;
+	protected int $levels;
 
-	public function __construct(array $storages = [], $levels = -1) {
+	public function __construct(array $storages = [], int $levels = -1) {
 		$this->storages = $storages;
 
 		if( $levels <= 0 )
@@ -17,7 +17,7 @@ class Logger {
 			$this->levels = $levels;
 	}
 
-	public function Log(int $level, string $message, string $source, $details = null): void {
+	public function Log(int $level, string $message, array $source, $details = null): void {
 		if( ($level & $this->levels) == 0 )
 			return;
 
@@ -25,7 +25,7 @@ class Logger {
 			$s->Log($level, $message, $source, $details);
 	}
 
-	private function getSourceInfo($depth = 2): array {
+	private function getSourceInfo(int $depth = 2): array {
 		$bt = debug_backtrace(0, $depth);
 
 		return [

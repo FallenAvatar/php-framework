@@ -167,7 +167,7 @@ class APIHandler extends \Core\Obj implements IRequestHandler {
 		$al = \Core\Autoload\StandardAutoloader::Get();
 
 		if( is_object($ns) ) {
-			$ns = $ns->To[];
+			$ns = $ns->ToArray();
 
 			foreach( $ns as $k => $v ) {
 				if( !startsWith($class, $v['prefix']) )

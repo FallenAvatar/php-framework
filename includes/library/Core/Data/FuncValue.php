@@ -1,16 +1,18 @@
 <?php
 
-namespace Core\Data {
-	class FuncValue extends SpecialValue {
-		public $TextValue;
-		public $ParamName;
-		public $ParamValue;
-		
-		public function __construct($name, $txt, $val) {
-			parent::__construct('func-value');
-			$this->TextValue = $txt;
-			$this->ParamName = $name;
-			$this->ParamValue = $val;
-		}
+declare(strict_types=1);
+
+namespace Core\Data;
+
+class FuncValue extends SpecialValue {
+	public string $TextValue;
+	public string $ParamName;
+	public $ParamValue;
+	
+	public function __construct(string $name, string $txt, $val) {
+		parent::__construct('func-value');
+		$this->TextValue = $txt;
+		$this->ParamName = $name;
+		$this->ParamValue = $val;
 	}
 }
