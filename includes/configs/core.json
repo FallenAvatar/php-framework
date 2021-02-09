@@ -72,7 +72,6 @@
 		}
 	},
 	"Site": {
-		"base_url": "/",
-		"upload_dir": "/uploads/"
+		"title": "ThisGals LLC :: PHP Framework"
 	}
 }
