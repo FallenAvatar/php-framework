@@ -3,7 +3,7 @@
 define('FRAMEWORK_TIMING_START', microtime(true));
 
 error_reporting(E_ALL & ~E_NOTICE);
-ini_set('display_errors', 1);
+ini_set('display_errors', '1');
 define('DS', DIRECTORY_SEPARATOR);
 
 include_once('functions.php');

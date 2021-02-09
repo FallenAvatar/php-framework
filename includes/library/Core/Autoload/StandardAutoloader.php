@@ -5,7 +5,13 @@ declare(strict_types=1);
 namespace Core\Autoload;
 
 class StandardAutoloader {
-	use \Core\Traits\TSingleton;
+	private static StandardAutoloader $_inst;
+	public static function Get(): StandardAutoloader {
+		if( !isset(static::$_inst) )
+			static::$_inst = new static();
+
+		return static::$_inst;
+	}
 
 	public static function Register($ns, $libPath) {
 		static::Get()->RegisterNS($ns, $libPath);

@@ -82,9 +82,12 @@ class ConfigStack extends \Core\Obj {
 		if( $is_one_assoc ) {
 			foreach($one as $name => $value) {
 				$item = null;
-				if( array_key_exists($name, $two) )
-					$item = $this->MergeHelper($value, $two[$name]);
-				else
+				if( array_key_exists($name, $two) ) {
+					if( is_array($value) )
+						$item = $this->MergeHelper($value, $two[$name]);
+					else
+						$item = $two[$name];
+				} else
 					$item = $value;
 
 				$ret[$name] = $item;

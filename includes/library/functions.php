@@ -59,7 +59,7 @@ function record_timing(string $name, $details = null): void {
 	$ft->AddTiming($name, \microtime(true), $details);
 }
 
-function record_manual_timing(string $name, int $time, $details = null): void {
+function record_manual_timing(string $name, float $time, $details = null): void {
 	$ft = \Core_FrameworkTiming::Get();
 
 	$ft->AddTiming($name, $time, $details);
@@ -72,7 +72,7 @@ function get_timings(): array {
 }
 
 class Core_FrameworkTiming {
-	private static Core_FrameworkTiming $inst = null;
+	private static ?Core_FrameworkTiming $inst = null;
 	public static function Get(): Core_FrameworkTiming {
 		if( !isset(self::$inst) )
 			self::$inst = new self();
@@ -81,8 +81,8 @@ class Core_FrameworkTiming {
 	}
 
 	private array $entries;
-	private int $start;
-	private int $last;
+	private float $start;
+	private float $last;
 
 	private function __construct() {
 		$this->entries = [];
@@ -90,7 +90,7 @@ class Core_FrameworkTiming {
 		$this->last = $this->start;
 	}
 
-	public function AddTiming(string $name, int $time, $details = null): void {
+	public function AddTiming(string $name, float $time, $details = null): void {
 		$this->entries[] = [
 			'name' => $name,
 			'time' => $time,

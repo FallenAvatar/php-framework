@@ -26,7 +26,7 @@ class URI extends \Core\Obj {
 	public function _getScheme(): string { return $this->parts['scheme']; }
 	public function _getHost(): string { return $this->parts['host']; }
 	public function _getTLD(): string { return $this->parts['tld']; }
-	public function _getPort(): string { return $this->parts['port']; }
+	public function _getPort(): int { return $this->parts['port']; }
 	public function _getUser(): string { return $this->parts['user']; }
 	public function _getPassword(): string { return $this->parts['pass']; }
 	public function _getPath(): string { return $this->parts['path']; }
@@ -37,7 +37,8 @@ class URI extends \Core\Obj {
 		$this->parts = @parse_url($uri);
 
 		$domain = $this->getRegisteredDomain($this->parts['host']);
-		$this->parts['tld'] = substr($domain,strpos($domain,'.')+1);
+		if( isset($domain) )
+			$this->parts['tld'] = substr($domain,strpos($domain,'.')+1);
 	}
 
 	public function getRegisteredDomain($signingDomain) {

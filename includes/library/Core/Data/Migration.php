@@ -50,7 +50,7 @@ class Migration extends \Core\Obj {
 				}
 			}
 
-			$db->ExecuteNonQuery('UPDATE '.$db->DelimTable('settings').' SET '.$db->DelimColumn('value').' = '.$db->DelimParameter('v').' WHERE name = '.$db->DelimParameter('n'),['n' => 'schema_version', 'v' => $this->schema_version]);
+			$db->ExecuteNonQuery('UPDATE '.$db->DelimTable('_db_migrations').' SET '.$db->DelimColumn('value').' = '.$db->DelimParameter('v').' WHERE name = '.$db->DelimParameter('n'),['n' => 'schema_version', 'v' => $this->schema_version]);
 
 			$db->CommitTransaction();
 		} catch(\Throwable $t) {

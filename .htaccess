@@ -4,8 +4,8 @@ DirectoryIndex index.php
 RewriteEngine On
 RewriteBase /
 
-RewriteCond %{HTTPS} !=on
-RewriteRule ^/?(.*) https://%{SERVER_NAME}/$1 [R,L]
+#RewriteCond %{HTTPS} !=on
+#RewriteRule ^/?(.*) https://%{SERVER_NAME}/$1 [R,L]
 
 # Prevent Infinite Loop
 RewriteRule ^includes/library/base.php$ - [L,NC]

@@ -17,7 +17,7 @@ class Cache extends \Core\Obj {
 	}
 
 	private string $file_path;
-	private ?array $settings;
+	private array $settings;
 	public function __construct(string $path) {
 		$app = \Core\Application::Get();
 
@@ -32,7 +32,7 @@ class Cache extends \Core\Obj {
 		$this->file_path = \Core\IO\Path::Combine($cache_dir,$fn.'.json');
 
 		if( !file_exists($this->file_path) )
-			$this->settings = null;
+			$this->settings = [];
 		else
 			$this->settings = json_decode(file_get_contents($this->file_path), true);
 	}

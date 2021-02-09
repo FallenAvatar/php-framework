@@ -67,13 +67,16 @@ class PageHandler extends \Core\Obj implements IRequestHandler {
 			$inst = new \Core\Web\UI\Page();
 
 		if( !($inst instanceof \Core\Web\UI\Page) )
-			throw new \Exception('Page class ['.$class_name.'] found for url ['.$this->rel_path.'], but it does not entend \Core\Web\UI\Page.');
+			throw new \Exception('Page class ['.$class_name.'] found for url ['.$this->rel_path.'], but it does not extend \Core\Web\UI\Page.');
 
 		header('Content-Type: text/html; charset=UTF-8');
 		$this->RunPage($inst, $this->abs_path, $this->rel_path);
 	}
 
-	public function ExecuteErrorRequest(string $errorPagePath, int $errorCode): void {
+	public function ExecuteErrorRequest(\Core\Application $App, string $errorPagePath, int $errorCode): void {
+		$this->abs_path = $App->Request->Url->Path;
+		$this->rel_path = $this->abs_path;
+
 		$class_name = '\\Site\\Pages\\Error\\_'.$errorCode;
 		$inst = null;
 		$al = \Core\Autoload\StandardAutoloader::Get();
@@ -84,7 +87,7 @@ class PageHandler extends \Core\Obj implements IRequestHandler {
 			$inst = new \Core\Web\UI\Page();
 
 		if( !($inst instanceof \Core\Web\UI\Page) )
-			throw new \Exception('Page class ['.$class_name.'] found for url ['.$this->rel_path.'], but it does not entend \Core\Web\UI\Page.');
+			throw new \Exception('Error Page class ['.$class_name.'] found for error code ['.$errorCode.'], but it does not extend \Core\Web\UI\Page.');
 
 		$this->RunPage($inst, $errorPagePath, $this->rel_path);
 	}

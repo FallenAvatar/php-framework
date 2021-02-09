@@ -14,7 +14,7 @@ class Request extends \Core\Obj {
 	protected \Core\Web\URI $url;
 	public function _getUrl(): \Core\Web\URI { return $this->url; }
 
-	protected \Core\Web\URI $urlReferer;
+	protected ?\Core\Web\URI $urlReferer;
 	public function _getUrlReferer(): \Core\Web\URI { return $this->urlReferer; }
 
 	public function _getUserAgent(): string { return $_SERVER["HTTP_USER_AGENT"]; }
@@ -30,6 +30,7 @@ class Request extends \Core\Obj {
 		$query = $path_parts[1];
 		$scheme = (($port == '443') ? 'https' : 'http');
 		$this->url = new \Core\Web\URI($scheme.'://'.$host.(($port == '80' || $port == '443') ? '' : ':'.$port).$path.((isset($query) && trim($query) != '') ? '?'.$query : ''));
-		$this->urlReferer = new \Core\Web\URI($_SERVER["HTTP_REFERER"]);
+		if( isset($_SERVER["HTTP_REFERER"]) )
+			$this->urlReferer = new \Core\Web\URI($_SERVER["HTTP_REFERER"]);
 	}
 }

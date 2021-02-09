@@ -197,7 +197,8 @@ class Application extends \Core\Obj {
 		error_log('\Core\Application::ExceptionHandler - '.json_encode(\Core\Exception::ToJsonObject($ex)), 0, \Core\IO\Path::Combine($this->Dirs->Includes, 'error_log'));
 
 		$this->LastError = $ex;
-		$this->ErrorPageHandler(500);
+		throw $ex;
+		//$this->ErrorPageHandler(500);
 	}
 
 	public function ErrorPageHandler(int $errorCode): void {
@@ -213,7 +214,7 @@ class Application extends \Core\Obj {
 		if( \Core\IO\File::Exists($errorPath) ) {
 			// Print pretty error
 			$handler = new \Core\Handlers\PageHandler();
-			$handler->ExecuteErrorRequest($errorPath, $errorCode);
+			$handler->ExecuteErrorRequest($this, $errorPath, $errorCode);
 		}
 
 		exit(0);
@@ -468,6 +469,7 @@ Timings:
 				$warn .= '!!!!';
 ?>
 <?=str_pad($name, $pad_len)?>: <?=$et?> (<?=$el?>) <?=$warn?>
+
 <?php
 		}
 

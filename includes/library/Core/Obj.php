@@ -21,10 +21,10 @@ class Obj {
 		throw new Exception('Property ['.$name.'] not found on object.');
 	}
 
-	public function __set(string $name, $value): bool {
+	public function __set(string $name, $value) {
 		$method_name = '_set'.$name;
 		if( method_exists($this, $method_name) )
-			return $this->$method_name($value);
+			$this->$method_name($value);
 
 		throw new Exception('Property ['.$name.'] not found on type ['.get_class($this).'].');
 	}

@@ -4,16 +4,16 @@ namespace Core\Handlers;
 
 class HandlerFactory extends \Core\Obj {
 	public static function ProcessRequest(): string {
-		$app = \Core\Application::Get();
-		$handler_classes = $app->Config->Core->Web->handlers;
+		$App = \Core\Application::Get();
+		$handler_classes = $App->Config->Core->handlers;
 
 		$found = false;
 		$found_name = null;
 
 		foreach($handler_classes as $name => $class) {
 			$handler = new $class();
-			if( ($data = $handler->CanHandleRequest($app)) !== false ) {
-				$handler->ExecuteRequest($app, $data);
+			if( ($data = $handler->CanHandleRequest($App)) !== false ) {
+				$handler->ExecuteRequest($App, $data);
 				$found = true;
 				$found_name = $name;
 				break;
@@ -34,12 +34,13 @@ class HandlerFactory extends \Core\Obj {
 			$txt = ' '.\Core\Application::$HttpErrorCodeText[$errorCode];
 
 		header('HTTP/1.0 '.$errorCode.$txt);
-		$errorPath = \Core\Application::Get()->Dirs->Root.DS.'error'.DS.$errorCode.'.phtml';
+		$App = \Core\Application::Get();
+		$errorPath = $App->Dirs->Root.DS.'error'.DS.$errorCode.'.phtml';
 
 		if( file_exists($errorPath) ) {
 			// Print pretty error
 			$handler = new \Core\Handlers\PageHandler();
-			$handler->ExecuteErrorRequest($errorPath, $errorCode);
+			$handler->ExecuteErrorRequest($App, $errorPath, $errorCode);
 		}
 	}
 }
