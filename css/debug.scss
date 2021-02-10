@@ -1,0 +1,86 @@
+
+
+body {overflow-y: auto;}
+
+.debug-page {
+	display: flex;
+	flex-direction: row;
+	height: 100%;
+	overflow-y: scroll;
+
+	& > nav#menu {
+		height: 100%;
+		border-right: solid 1px #000;
+		position: relative;
+		width: 10em;
+		overflow: hidden;
+
+		ul {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			display: flex;
+			flex-direction: column;
+			z-index: 1;
+			background-color: #fff;
+			transition: 0.25s left ease-in-out;
+
+			ul {
+				left: 100%;
+
+				&:before {
+					content: "Back";
+					display: inline-block;
+					height: 1em;
+					padding: 1em;
+					border-bottom: solid 1px #000;
+
+					&:hover {
+						background-color: #ffc;
+					}
+				}
+			}
+
+			li {
+				border-bottom: solid 1px #000;
+				height: 3em;
+				display: flex;
+				flex-direction: row;
+
+				a {
+					display: inline-block;
+					height: 1em;
+					padding: 1em;
+					flex-grow: 0;
+				}
+
+				&:hover {
+					background-color: #ffc;
+				}
+
+				&.has-sub-menu:after {
+					content: ">";
+					display: inline-block;
+					margin-right: 0.5em;
+					margin-top: 0.5em;
+					color: #ccc;
+					font-size: 2em;
+					text-align: right;
+					flex-grow: 1;
+					vertical-align: middle;
+				}
+			}
+		}
+	}
+
+	& > .page-holder {
+		height: 100%;
+		flex-grow: 1;
+		
+		.page {
+			padding: 2em;
+		}
+	}
+}

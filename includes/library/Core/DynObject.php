@@ -21,7 +21,7 @@ class DynObject extends Obj implements \IteratorAggregate {
 		$ret = $this->internalData[$name];
 
 		if( !isset($ret) )
-			throw new Exception('Property ['.$name.'] not found on Dynamic Object.');
+			throw new \Exception('Property ['.$name.'] not found on Dynamic Object.');
 		else if( is_array( $ret ) && ArrayHelper::IsAssoc($ret) )
 			return new DynObject($ret);
 		else
@@ -36,7 +36,7 @@ class DynObject extends Obj implements \IteratorAggregate {
 			$value = new DynObject($value);
 
 		if( !isset($this->internalData[$name]) && !$this->allowNewProps )
-			throw new Exception('Property ['.$name.'] not found on Dynamic Object.');
+			throw new \Exception('Property ['.$name.'] not found on Dynamic Object.');
 		else
 			$this->internalData[$name] = $value;
 	}
@@ -47,7 +47,7 @@ class DynObject extends Obj implements \IteratorAggregate {
 
 	public function __unset(string $name): void {
 		if( $this->isReadOnly )
-			throw new Exception('This object is Read Only!');
+			throw new \Exception('This object is Read Only!');
 
 		unset($this->internalData[$name]);
 	}

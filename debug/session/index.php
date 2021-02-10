@@ -1,6 +1,6 @@
 <?php
 
-$app = \Core\Application::GetInstance();
+$app = \Core\Application::Get();
 if( !isset($app->Config->Core->debug) || $app->Config->Core->debug !== true )
 	$this->Redirect('/');
 	
@@ -9,6 +9,6 @@ $this->SetLayout('debug');
 ?>
 <article class="page" id="session-page">
 	<h1>Session</h1>
-	<a href="debug/session/clear">Clear Session</a>
+	<a href="/debug/session/clear">Clear Session</a>
 	<pre><?=print_r($_SESSION, true)?></pre>
 </article>

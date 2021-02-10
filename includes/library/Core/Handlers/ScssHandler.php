@@ -15,7 +15,7 @@ class ScssHandler implements \Core\Handlers\IRequestHandler {
 			return false;
 
 		if( strpos($path, $App->Dirs->WebRoot) === false )
-			$path = substr($App->Dirs->WebRoot,0,strlen($this->Dirs->WebRoot)-1).$path;
+			$path = substr($App->Dirs->WebRoot,0,strlen($App->Dirs->WebRoot)-1).$path;
 
 		$path = \Core\IO\Path::Combine($App->Dirs->DocumentRoot,$path);
 
@@ -40,7 +40,7 @@ class ScssHandler implements \Core\Handlers\IRequestHandler {
 			$rel_path = str_replace('/', DS, $rel_path);
 
 		if( strpos($path, $App->Dirs->WebRoot) === false )
-			$path = substr($App->Dirs->WebRoot,0,strlen($this->Dirs->WebRoot)-1).$path;
+			$path = substr($App->Dirs->WebRoot,0,strlen($App->Dirs->WebRoot)-1).$path;
 
 		$path = \Core\IO\Path::Combine($App->Dirs->DocumentRoot,$path);
 		$cached_path = \Core\IO\Path::Combine($App->Dirs->Cache,'core','web','scss',$rel_path);

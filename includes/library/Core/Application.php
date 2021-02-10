@@ -49,7 +49,7 @@ class Application extends \Core\Obj {
 		505 => "HTTP Version Not Supported"
 	];
 
-	protected static ?Application $s_inst = null;
+	protected static Application $s_inst;
 
 	public static function Get(): Application {
 		return self::$s_inst;
@@ -96,7 +96,7 @@ class Application extends \Core\Obj {
 	}
 
 	protected ?Configuration\Config $Config = null;
-	public function _getConfig() {
+	public function _getConfig(): ?Configuration\Config {
 		return $this->Config;
 	}
 
@@ -119,8 +119,8 @@ class Application extends \Core\Obj {
 	public function _getRequest(): ?Web\Request {
 		return $this->Request;
 	}
-	protected $LastError;
-	public function _getLastError() {
+	protected \Throwable $LastError;
+	public function _getLastError(): \Throwable {
 		return $this->LastError;
 	}
 
@@ -189,16 +189,16 @@ class Application extends \Core\Obj {
 		if( $errno == E_NOTICE && strcmp(substr($errstr, 0, 19), 'Undefined variable:') != 0 )
 			return true;
 
-		// Call Exception Handler
-		throw new \ErrorException($errstr, $errno, 0, $errfile, $errline);
+		// Trigger Exception Handler
+		throw new \Core\Exception($errstr, $errno, 0, $errfile, $errline, null, $errcontext);
 	}
 
 	public function ExceptionHandler(\Throwable $ex) {
 		error_log('\Core\Application::ExceptionHandler - '.json_encode(\Core\Exception::ToJsonObject($ex)), 0, \Core\IO\Path::Combine($this->Dirs->Includes, 'error_log'));
 
 		$this->LastError = $ex;
-		throw $ex;
-		//$this->ErrorPageHandler(500);
+		//throw $ex;
+		$this->ErrorPageHandler(500);
 	}
 
 	public function ErrorPageHandler(int $errorCode): void {
@@ -362,39 +362,11 @@ class Application extends \Core\Obj {
 
 	protected function LoadModules(): void {
 		record_timing(__CLASS__.'::'.__FUNCTION__.' - Start');
-		// TODO: Load Modules
-		$modsDir = dir($this->Dirs->Modules);
+		
+		\Core\Module\Manager::Init($this);
+		\Core\Module\Manager::InitModules();
 
-		while( false !== ($entry = $modsDir->read()) ) {
-			if( $entry == '.' || $entry == '..' )
-				continue;
-
-			$ePath = \Core\IO\Path::Combine($this->Dirs->Modules, $entry);
-
-			if( !is_dir($ePath) )
-				continue;
-
-			$configPath =  \Core\IO\Path::Combine($ePath, 'module.json');
-
-			if( !is_file($configPath) ) {
-				// TODO: Log
-				continue;
-			}
-
-			$modConfig = null;
-
-			try {
-				$configJson = json_decode(file_get_contents($configPath), true);
-				$modConfig = new \Core\Configuration\Config($configJson);
-			} catch(\Exception $e) {
-				// TODO: Log
-				continue;
-			}
-
-			\Core\Module\Manager::LoadModule($modConfig, $ePath);
-		}
-
-		$allMods = \Core\Module\Manager::GetModules();
+		//$allMods = \Core\Module\Manager::GetModules();
 
 		record_timing(__CLASS__.'::'.__FUNCTION__.' - End');
 	}

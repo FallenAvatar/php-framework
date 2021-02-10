@@ -6,7 +6,7 @@ $this->AddStyle('.testing td, .testing th', array(
 
 function checkPublicSuffix($domain, $expected_result)
 {
-	$app = \Core\Application::GetInstance();
+	$app = \Core\Application::Get();
 	$url = $app->Request->Url;
 	
 	$result = $url->getRegisteredDomain($domain);

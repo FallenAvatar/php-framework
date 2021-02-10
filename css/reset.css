@@ -11,7 +11,7 @@ html, body, div, span, object, iframe, a, h1, h2, h3, h4, h5, h6, p, blockquote,
 	border: 0;
 	outline: 0;
 	font-size: 1em;
-	vertical-align: baseline;
+	vertical-align: top;
 	background: transparent;
 	background-repeat: no-repeat;
 	font-family: inherit;
@@ -19,6 +19,7 @@ html, body, div, span, object, iframe, a, h1, h2, h3, h4, h5, h6, p, blockquote,
 	font-weight: inherit;
 	font-style: inherit;
 	color: inherit;
+	list-style-position: inside;
 }
 
 body {

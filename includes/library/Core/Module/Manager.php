@@ -14,7 +14,7 @@ final class Manager extends \Core\Obj {
 	}
 
 	private static function loadModules(): void {
-		$module_dir = self::$App->dirs->Modules;
+		$module_dir = self::$App->Dirs->Modules;
 
 		if( !is_dir($module_dir) )
 			return;

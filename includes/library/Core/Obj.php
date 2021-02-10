@@ -18,7 +18,7 @@ class Obj {
 		if( method_exists($this, $method_name) )
 			return $this->$method_name();
 
-		throw new Exception('Property ['.$name.'] not found on object.');
+		throw new \Exception('Property ['.$name.'] not found on object.');
 	}
 
 	public function __set(string $name, $value) {
@@ -26,7 +26,7 @@ class Obj {
 		if( method_exists($this, $method_name) )
 			$this->$method_name($value);
 
-		throw new Exception('Property ['.$name.'] not found on type ['.get_class($this).'].');
+		throw new \Exception('Property ['.$name.'] not found on type ['.get_class($this).'].');
 	}
 
 	public function __isset(string $name): bool {
@@ -39,7 +39,7 @@ class Obj {
 
 	public function __call(string $name, array $args) {
 		if( !method_exists($this, $name.'0') )
-			throw new Exception('Method ['.$name.'] not found on type ['.get_class($this).'].');
+			throw new \Exception('Method ['.$name.'] not found on type ['.get_class($this).'].');
 
 		$methods = [];
 		$idx = 0;
@@ -80,9 +80,9 @@ class Obj {
 		return $method->invokeArgs($this, $args);
 	}
 
-	public static function __callStatic(string $name, array $args) {
+	//public static function __callStatic(string $name, array $args) {
 		//TODO: Implement Methoc Overloading
-	}
+	//}
 
 	public function __destruct() {
 		$this->Dispose();

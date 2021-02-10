@@ -1,6 +1,6 @@
 <?php
 
-$app = \Core\Application::GetInstance();
+$app = \Core\Application::Get();
 if( !isset($app->Config->Core->debug) || $app->Config->Core->debug !== true )
 	$this->Redirect('/');
 	
