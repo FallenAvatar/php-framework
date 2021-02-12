@@ -6,7 +6,7 @@ namespace Core\Module;
 
 final class Manager extends \Core\Obj {
 	private static array $mods = [];
-	private static ?\Core\Application $App = null;
+	private static \Core\Application $App;
 
 	public static function Init(\Core\Application $App) {
 		self::$App = $App;
@@ -77,7 +77,7 @@ final class Manager extends \Core\Obj {
 				continue;
 
 			foreach( $info['config']['autoload'] as $ns => $path ) {
-				\Core\Autoload\StandardAutoloader::Register($ns, \Core\IO\Path::Combine($info['dir'], $path));
+				\Core\Autoload\StandardAutoloader::Register($ns, str_replace('/', DS, \Core\IO\Path::Combine($info['dir'], $path)));
 			}
 		}
 	}
