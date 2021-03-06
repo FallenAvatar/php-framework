@@ -96,6 +96,7 @@ class Core_FrameworkTiming {
 			'time' => $time,
 			'elapsed_total' => $time - $this->start,
 			'elapsed_last' => $time - $this->last,
+			'elapsed_fw' => $time - FRAMEWORK_TIMING_START,
 			'details' => $details
 		];
 

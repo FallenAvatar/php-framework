@@ -3,15 +3,22 @@
 define('FRAMEWORK_TIMING_START', microtime(true));
 
 error_reporting(E_ALL & ~E_NOTICE);
-ini_set('display_errors', '1');
+ini_set('log_errors', '1');
 define('DS', DIRECTORY_SEPARATOR);
+
+$libPath = realpath(dirname(__FILE__)) . DS;
+
+$err_log_path = $libPath.'..'.DS.'logs'.DS.'error.log';
+ini_set('error_log', $err_log_path);
 
 include_once('functions.php');
 
-record_manual_timing('start', FRAMEWORK_TIMING_START);
+record_manual_timing('Before PHP', FRAMEWORK_TIMING_START);
 record_timing('functions.php loaded');
 
-$libPath = realpath(dirname(__FILE__)) . DS;
+// TODO: Move to \Core\Application and only if debug
+ini_set('display_errors', '1');
+
 require_once($libPath . 'Core' . DS . 'Autoload' . DS . 'StandardAutoloader.php');
 
 record_timing('Autoloader loaded');

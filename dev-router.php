@@ -81,11 +81,12 @@ foreach( $lines as $line ) {
 	}
 }
 
-/*echo 'DirIndex: '.$dir_index."\n";
+/* echo 'DirIndex: '.$dir_index."\n";
 echo 'Engine: '.($engine_on ? 'On' : 'Off')."\n";
 echo 'Base: '.$base."\n";
 echo "\n";
-print_r($rules);*/
+print_r($rules);
+exit(); */
 
 //print_r($_SERVER);
 
@@ -113,6 +114,11 @@ foreach($rules as $rule) {
 			}
 		}
 
+		if( in_array('R=301', $rule['flags']) ) {
+			header('Location: '.$base.$url);
+			exit();
+		}
+
 		if( in_array('L', $rule['flags']) ) {
 			break;
 		}
@@ -122,5 +128,6 @@ foreach($rules as $rule) {
 if( !$matched_rule )
 	return false;
 
+//echo 'requiring '.$_SERVER['DOCUMENT_ROOT'].DIRECTORY_SEPARATOR.$url;
 // set server vars and require
 require($_SERVER['DOCUMENT_ROOT'].DIRECTORY_SEPARATOR.$url);

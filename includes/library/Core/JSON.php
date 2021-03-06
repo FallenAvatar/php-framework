@@ -10,10 +10,13 @@ declare(strict_types=1);
 
 namespace Core;
 
-class JSON {
+class JSON extends \Core\Obj {
 
-	public static function ParseFile(string $file): JSON {
-		return new \Core\JSON(\file_get_contents($file));
+	public static function ParseFile(string|array $file): JSON {
+		if( \is_string($file) )
+			return new \Core\JSON(\file_get_contents($file));
+		else
+			return new \Core\JSON($file);
 	}
 
 	private ?array $data;
@@ -30,7 +33,7 @@ class JSON {
 		return ($this->last_error != JSON_ERROR_NONE);
 	}
 
-	public function __construct($str = null) {
+	public function __construct(string|array|null $str = null) {
 		$this->data = null;
 		$this->last_error = 0;
 		$this->last_error_str = null;

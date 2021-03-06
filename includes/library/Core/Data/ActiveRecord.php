@@ -47,7 +47,7 @@ abstract class ActiveRecord extends \Core\Obj implements \JsonSerializable {
 		return $db->ExecuteQuery($sql, $ps, get_called_class());
 	}
 	
-	public static function FindFirstBy(array $params, array $order_by) {
+	public static function FindFirstBy(array $params, array $order_by): static {
 		$rows = static::FindAllBy($params, 'AND', $order_by);
 		
 		if( !isset($rows) || !is_array($rows) || count($rows) < 1 )
@@ -56,7 +56,7 @@ abstract class ActiveRecord extends \Core\Obj implements \JsonSerializable {
 		return $rows[0];
 	}
 	
-	public static function FindOnlyBy(array $params) {
+	public static function FindOnlyBy(array $params): static {
 		$rows = static::FindAllBy($params);
 		
 		if( !isset($rows) || !is_array($rows) || count($rows) != 1 )
@@ -65,12 +65,12 @@ abstract class ActiveRecord extends \Core\Obj implements \JsonSerializable {
 		return $rows[0];
 	}
 	
-	public static function Load(int $id) {
+	public static function Load(int $id): static {
 		$info = static::loadColInfo();
 		return static::LoadMK([$info['keys'][0] => $id]);
 	}
 
-	public static function LoadMK(array $ids) {
+	public static function LoadMK(array $ids): static {
 		$info = static::loadColInfo();
 		$keys = $info['keys'];
 		$params = [];
@@ -218,7 +218,7 @@ abstract class ActiveRecord extends \Core\Obj implements \JsonSerializable {
 		$this->loaded = false;
 	}
 	
-	protected function LoadInstance($ids) {
+	protected function LoadInstance(array $ids): void {
 		$where = '';
 		$first = true;
 		$data = [];
@@ -240,7 +240,7 @@ abstract class ActiveRecord extends \Core\Obj implements \JsonSerializable {
 			$this->LoadData($rows[0]);
 	}
 	
-	protected function LoadData($data) {
+	protected function LoadData(array $data): void {
 		$this->data_original = $data;
 		$this->data = $data;
 		$this->loaded = true;
@@ -303,7 +303,7 @@ abstract class ActiveRecord extends \Core\Obj implements \JsonSerializable {
 		return static::GetTable()->Delete($sql, $params);
 	}
 	
-	public function jsonSerialize() {
+	public function jsonSerialize(): array {
 		$ret = [];
 		
 		foreach( $this->data as $n => $v ) {
@@ -329,21 +329,21 @@ abstract class ActiveRecord extends \Core\Obj implements \JsonSerializable {
 		else if( array_key_exists($name, $this->cols) )
 			return $this->data[$name];
 		
-		throw new \Core\Exception('Property ['.$name.'] not found.');
+		throw new \Exception('Property ['.$name.'] not found.');
 	}
 	
 	public function __set(string $name, $value): void {
 		if( method_exists($this, '_set'.$name) )
-			return call_user_method_array('_set'.$name, $this, [$value]);
+			return \call_user_method_array('_set'.$name, $this, [$value]);
 		else if( in_array($name, $this->keys) && count($this->keys) == 1 )
-			throw new \Core\Exception('You can not set the primary key for a table with one primary key.');
+			throw new \Exception('You can not set the primary key for a table with one primary key.');
 		
 		if( array_key_exists($name, $this->cols) ) {
 			$this->data[$name] = $value;
 			return;
 		}
 		
-		throw new \Core\Exception('Property ['.$name.'] not found.');
+		throw new \Exception('Property ['.$name.'] not found.');
 	}
 	
 	public function __isset(string $name): bool {
@@ -355,7 +355,7 @@ abstract class ActiveRecord extends \Core\Obj implements \JsonSerializable {
 	
 	public function __unset(string $name): void {
 		if( in_array($name, $this->keys) && count($this->keys) == 1 )
-			throw new \Core\Exception('You can not set the primary key for a table with one primary key.');
+			throw new \Exception('You can not set the primary key for a table with one primary key.');
 		
 		if( array_key_exists($name, $this->cols) )
 			return $this->data[$name] = null;

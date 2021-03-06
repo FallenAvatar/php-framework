@@ -18,7 +18,7 @@ class ConfigStack extends \Core\Obj {
 		foreach( $files as $file ) {
 			$j = \Core\JSON::ParseFile($file);
 
-			if( $j->IsError )
+			if( $j?->IsError )
 				throw new \Exception('JSON Error ['.$j->ErrorNumber.'] loading file: ['.$file.']. Error: '.$j->ErrorString);
 
 			$this->configs[] = $j->ToArray();

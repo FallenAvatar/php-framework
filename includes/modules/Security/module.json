@@ -1,5 +1,10 @@
 {
+	"name": "tg-security",
+	"module_class": "\\Security\\Module",
 	"autoload": {
 		"Security": "lib/"
-	}
+	},
+	"depends": [
+		"tg-email"
+	]
 }

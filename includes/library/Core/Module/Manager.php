@@ -50,10 +50,7 @@ final class Manager extends \Core\Obj {
 	private static function LoadModule(array $config, string $dir): void {
 		$name = $config['name'];
 
-		self::$mods[$name] = [
-			'config' => $config,
-			'dir' => $dir
-		];
+		self::$mods[$name] = new ModuleInfo($config, $dir);
 	}
 
 	public static function GetModules(): array {
@@ -65,7 +62,10 @@ final class Manager extends \Core\Obj {
 
 		// TODO: Sort based on dependencies
 		foreach( self::$mods as $name => $info ) {
-			$ret[] = $info['config'];
+			if( !isset($info->config['mod_config']) )
+				continue;
+
+			$ret[] = $info->config['mod_config'];
 		}
 
 		return $ret;
@@ -73,12 +73,24 @@ final class Manager extends \Core\Obj {
 
 	public static function InitModules(): void {
 		foreach( self::$mods as $info ) {
-			if( !isset($info['config']) || !isset($info['config']['autoload']) )
+			if( !isset($info->config['autoload']) )
 				continue;
 
-			foreach( $info['config']['autoload'] as $ns => $path ) {
-				\Core\Autoload\StandardAutoloader::Register($ns, str_replace('/', DS, \Core\IO\Path::Combine($info['dir'], $path)));
+			foreach( $info->config['autoload'] as $ns => $path ) {
+				\Core\Autoload\StandardAutoloader::Register($ns, str_replace('/', DS, \Core\IO\Path::Combine($info->Directory, $path)));
 			}
+		}
+
+		foreach( self::$mods as &$info ) {
+			if( !isset($info->config['module_class']) )
+				continue;
+
+			$cn = $info->config['module_class'];
+			$info->Instance = new $cn($info->config['mod_config'] ?? []);
+		}
+
+		foreach( self::$mods as $info ) {
+			$info->Instance?->Init();
 		}
 	}
 }

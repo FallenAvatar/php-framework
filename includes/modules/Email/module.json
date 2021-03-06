@@ -1,0 +1,13 @@
+{
+	"name": "tg-email",
+	"module_class": "\\Email\\Module",
+	"autoload": {
+		"Email": "lib/"
+	},
+	"depends": [],
+	"mod_config": {
+		"Email": {
+			"system": "default"
+		}
+	}
+}

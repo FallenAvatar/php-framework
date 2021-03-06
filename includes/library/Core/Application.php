@@ -115,11 +115,11 @@ class Application extends \Core\Obj {
 		return $this->Modules;
 	}
 
-	protected ?Web\Request $Request;
+	protected ?Web\Request $Request = null;
 	public function _getRequest(): ?Web\Request {
 		return $this->Request;
 	}
-	protected \Throwable $LastError;
+	protected ?\Throwable $LastError = null;
 	public function _getLastError(): \Throwable {
 		return $this->LastError;
 	}
@@ -184,7 +184,7 @@ class Application extends \Core\Obj {
 		return realpath(dirname(__FILE__).DS.'..'.DS.'..'.DS.'..'.DS).DS;
 	}
 
-	public function ErrorHandler(int $errno, string $errstr, ?string $errfile, ?int $errline, ?array $errcontext) {
+	public function ErrorHandler(int $errno, string $errstr, ?string $errfile, ?int $errline, ?array $errcontext = null) {
 		// Ignore notices except "Undefined variable" errors
 		if( $errno == E_NOTICE && strcmp(substr($errstr, 0, 19), 'Undefined variable:') != 0 )
 			return true;
@@ -194,7 +194,7 @@ class Application extends \Core\Obj {
 	}
 
 	public function ExceptionHandler(\Throwable $ex) {
-		error_log('\Core\Application::ExceptionHandler - '.json_encode(\Core\Exception::ToJsonObject($ex)), 0, \Core\IO\Path::Combine($this->Dirs->Includes, 'error_log'));
+		error_log('\Core\Application::ExceptionHandler - '.json_encode(\Core\Exception::ToJsonObject($ex)), 0, \Core\IO\Path::Combine($this->Dirs->Includes, 'logs', 'error_log'));
 
 		$this->LastError = $ex;
 		//throw $ex;
@@ -260,7 +260,7 @@ class Application extends \Core\Obj {
 		record_timing(__CLASS__.'::'.__FUNCTION__.' - Init Modules - End');
 
 		record_timing(__CLASS__.'::RunMigrations - Start');
-		//$this->RunMigrations();
+		$this->RunMigrations();
 		record_timing(__CLASS__.'::RunMigrations - End');
 
 		record_timing(__CLASS__.'::OnInit - Start');
@@ -328,6 +328,9 @@ class Application extends \Core\Obj {
 		$files = [];
 		$migrations = [];
 		$dp = \Core\IO\Path::Combine($this->Dirs->Data,'migrations');
+		if( !is_dir($dp) )
+			return;
+
 		$d = \dir($dp);
 
 		while( false !== ($f = $d->read()) ) {
@@ -350,7 +353,11 @@ class Application extends \Core\Obj {
 
 		$db = \Core\Data\Database::Get();
 
-		$curr_ver = $db->ExecuteScalar('SELECT '.$db->DelimColumn('value').' FROM '.$db->DelimTable('settings').' WHERE name = '.$db->DelimParameter('name'),['name' => 'schema_version']);
+		$create_sql = 'CREATE TABLE IF NOT EXISTS `framework`.`_db_migrations` (`version` INT UNSIGNED NOT NULL, `dt` BIGINT NOT NULL, PRIMARY KEY (`version`), UNIQUE INDEX `version_UNIQUE` (`version` ASC) VISIBLE, UNIQUE INDEX `dt_UNIQUE` (`dt` ASC) VISIBLE);';
+		$tret = $db->ExecuteMultiple($create_sql.'SELECT MAX('.$db->DelimColumn('version').') FROM '.$db->DelimTable('_db_migrations').' ORDER BY '.$db->DelimColumn('dt').' DESC LIMIT 1;', [], ['nq','s']);
+		$curr_ver = 0;
+		if( \is_array($tret) && count($tret) > 0 && \is_numeric($tret[1]) )
+			$curr_ver = $tret[1];
 
 		foreach( $migrations as $m ) {
 			if( $m->SchemaVersion <= $curr_ver )
@@ -360,24 +367,13 @@ class Application extends \Core\Obj {
 		}
 	}
 
-	protected function LoadModules(): void {
-		record_timing(__CLASS__.'::'.__FUNCTION__.' - Start');
-		
-		\Core\Module\Manager::Init($this);
-		\Core\Module\Manager::InitModules();
-
-		//$allMods = \Core\Module\Manager::GetModules();
-
-		record_timing(__CLASS__.'::'.__FUNCTION__.' - End');
-	}
-
 	protected function _run(): void {
 
 		$handler_name = \Core\Handlers\HandlerFactory::ProcessRequest();
 
 		$this->OnAfterHandlerRun($handler_name);
 
-		record_timing('end');
+		record_timing('After PHP');
 
 		if( $this->Config->Core->debug )
 			$this->printTimings();
@@ -422,13 +418,18 @@ class Application extends \Core\Obj {
 
 		echo $comments[0];
 ?>
+
 Timings:
+
+<?=str_pad('Name', $pad_len)?>:  Total   [FW Start] (  Last  ) Importance
+<?=str_pad('', 100, '-')?>
 
 <?php
 		foreach( $ts as $t ) {
 			$name = $t['name'];
 			$et = number_format($t['elapsed_total'], 6);
 			$el = number_format($t['elapsed_last'], 6);
+			$ef = number_format($t['elapsed_fw'], 6);
 
 			$warn = '';
 			if( $el > 0.001 )
@@ -440,7 +441,7 @@ Timings:
 			if( $el > 1 )
 				$warn .= '!!!!';
 ?>
-<?=str_pad($name, $pad_len)?>: <?=$et?> (<?=$el?>) <?=$warn?>
+<?=str_pad($name, $pad_len)?>: <?=$et?> [<?=$ef?>] (<?=$el?>) <?=$warn?>
 
 <?php
 		}

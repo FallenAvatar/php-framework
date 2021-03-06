@@ -7,11 +7,11 @@ RewriteBase /
 #RewriteCond %{HTTPS} !=on
 #RewriteRule ^/?(.*) https://%{SERVER_NAME}/$1 [R,L]
 
+# Prevent direct access to includes and config files
+RewriteRule ^includes/(.*)$ error/404 [R=301,L,NC]
+
 # Prevent Infinite Loop
 RewriteRule ^includes/library/base.php$ - [L,NC]
-
-# Prevent direct access to includes and config files
-RewriteRule ^includes/(.*)$ error/404 [L,NC]
 
 # Rewrite appropiate URLs to our engine
 RewriteRule ^$ includes/library/base.php [L,NC,QSA]

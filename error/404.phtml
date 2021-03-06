@@ -1,2 +1,8 @@
+<?php $this->SetLayout('error'); ?>
 <h1>404 - Not Found</h1>
 <p>The requested page could not be found.</p>
+<?php if( $this->App->Config->Core->debug ) {
+	$referrer = $this->App->Request?->UrlReferer ?? 'null';
+?>
+<pre><?=$referrer?></pre>
+<?php }

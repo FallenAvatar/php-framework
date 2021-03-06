@@ -141,6 +141,8 @@ abstract class Database extends \Core\Obj {
 						$rows = $t[0];
 				} else if( $opts[$i] == 'nq' || $opts[$i] == 'nonquery' ) {
 					$rows = $sth->rowCount();
+				} else if( $opts[$i] == 'n' || $opts[$i] == 'null' ) {
+					// Intentionally blank
 				} else {
 					$t = $sth->fetchAll(\PDO::FETCH_ASSOC);
 					$rows = [];
@@ -152,7 +154,8 @@ abstract class Database extends \Core\Obj {
 			} else
 				$rows = $sth->fetchAll(\PDO::FETCH_ASSOC);
 
-			$ret[] = $rows;
+			if( isset($rows) )
+				$ret[] = $rows;
 		} while( (++$i >= 0) && $sth->nextRowset() );
 
 		return $ret;

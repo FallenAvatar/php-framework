@@ -1,11 +1,9 @@
+<?php $this->SetLayout('error'); ?>
 <h1>500 - Server Error</h1>
-<p>An error has occured.</p>
-<?php
-	if( $this->App->Config->Core->debug ) {
-		$err = $this->App->LastError;
+<p>A server-side error has occured. We apologise for any inconvience. Please try again later.</p>
+<?php if( $this->App->Config->Core->debug ) {
+	$err = $this->App->LastError;
 ?>
 <h3><?=$err->getMessage()?> in <?=$err->getFile()?>(Line #<?=$err->getLine()?>)</h3>
 <pre><?=$err->getTraceAsString();?></pre>
-<?php
-	}
-?>
+<?php }
