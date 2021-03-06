@@ -23,22 +23,24 @@ class URI extends \Core\Obj {
 	}
 	protected $parts;
 
-	public function _getScheme(): string { return $this->parts['scheme']; }
-	public function _getHost(): string { return $this->parts['host']; }
-	public function _getTLD(): string { return $this->parts['tld']; }
-	public function _getPort(): int { return $this->parts['port']; }
-	public function _getUser(): string { return $this->parts['user']; }
-	public function _getPassword(): string { return $this->parts['pass']; }
-	public function _getPath(): string { return $this->parts['path']; }
-	public function _getQuery(): string { return $this->parts['query']; }
-	public function _getFragment(): string { return $this->parts['fragment']; }
+	public function _getScheme(): string { return $this->parts['scheme'] ?? 'http'; }
+	public function _getHost(): ?string { return $this->parts['host'] ?? null; }
+	public function _getTLD(): ?string { return $this->parts['tld'] ?? null; }
+	public function _getPort(): int { return $this->parts['port'] ?? 80; }
+	public function _getUser(): ?string { return $this->parts['user'] ?? null; }
+	public function _getPassword(): ?string { return $this->parts['pass'] ?? null; }
+	public function _getPath(): string { return $this->parts['path'] ?? ''; }
+	public function _getQuery(): ?string { return $this->parts['query'] ?? null; }
+	public function _getFragment(): ?string { return $this->parts['fragment'] ?? null; }
 
 	public function __construct(string $uri) {
-		$this->parts = @parse_url($uri);
+		$this->parts = \parse_url($uri);
 
 		$domain = $this->getRegisteredDomain($this->parts['host']);
 		if( isset($domain) )
 			$this->parts['tld'] = substr($domain,strpos($domain,'.')+1);
+		else
+			$this->parts['tld'] = null;
 	}
 
 	public function getRegisteredDomain($signingDomain) {

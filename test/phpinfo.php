@@ -2,6 +2,6 @@
 
 declare(strict_types=1);
 
-$this->SetLayout(null);
+$this->DisableLayout();
 
 phpinfo();

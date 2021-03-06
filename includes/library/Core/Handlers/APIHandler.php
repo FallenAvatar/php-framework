@@ -126,7 +126,7 @@ class APIHandler extends \Core\Obj implements IRequestHandler {
 		$args_to_pass = [];
 
 		$input = $_POST;
-		if( $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest' && $_SERVER['CONTENT_TYPE'] == 'application/json' ) {
+		if( $_SERVER['HTTP_X_REQUESTED_WITH'] ?? '' == 'XMLHttpRequest' && $_SERVER['CONTENT_TYPE'] ?? '' == 'application/json' ) {
 			$input = fopen('php://input', 'r');
 			$json_string = fgets($input);
 			$input = json_decode($json_string, true);
@@ -161,10 +161,13 @@ class APIHandler extends \Core\Obj implements IRequestHandler {
 		return $method_info->invokeArgs($inst, $args_to_pass);
 	}
 
-	protected function FindClass(\Core\Application $App, string $path): string {
+	protected function FindClass(\Core\Application $App, string $path): string|bool {
 		$ns = $App->Config->API->ns;
 		$class = '\\'.str_replace('/', '\\', $path);
 		$al = \Core\Autoload\StandardAutoloader::Get();
+
+		if( \startsWith($class, '\\') )
+			$class = substr($class,1);
 
 		if( is_object($ns) ) {
 			$ns = $ns->ToArray();

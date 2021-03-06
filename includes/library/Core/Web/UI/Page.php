@@ -45,11 +45,12 @@ class Page extends \Core\Web\BaseObject {
 		$this->Path = $web_path;
 	}
 
-	protected function SetLayout(?string $name = null): void {
-		if( isset($name) && trim($name) != '' && $name != '_none' && $name != 'default' )
-			$this->Layout = $name;
-		else
-			$this->Layout = 'default';
+	protected function DisableLayout(): void {
+		$this->Layout = '_none';
+	}
+
+	protected function SetLayout(string $name): void {
+		$this->Layout = $name;
 	}
 
 	public function SetOption(string $name, $value): void {
@@ -98,7 +99,7 @@ class Page extends \Core\Web\BaseObject {
 
 		$content = $this->RenderContent();
 
-		if( !isset($this->Layout) || $this->Layout == '' || $this->Layout == '_none' ) {
+		if( $this->Layout == '_none' ) {
 			foreach($content as $area)
 				echo $area;
 		} else {
