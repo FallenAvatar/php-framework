@@ -9,12 +9,13 @@
 
 	<title><?= $this->App->Config->Site->title . ((isset($this->Title) && trim($this->Title) != '') ? ' - '.$this->Title : '') ?></title>
 
-	<link rel="stylesheet" type="text/css" href="/css/reset.css" />
-	<link rel="stylesheet" type="text/css" href="/css/debug.css" />
+	<link rel="stylesheet" href="/css/reset.css" />
+	<link rel="stylesheet" href="/css/debug.css" />
 	<?= $this->GetStyleSheets() ?>
 
-	<script type="text/javascript" src="/js/lib/jquery.min.js"></script>
-	<script type="text/javascript" src="/js/debug.js"></script>
+	<script src="/js/lib/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/gh/cferdinandi/atomic@4/dist/atomic.min.js"></script>
+	<script src="/js/debug.js"></script>
 	<?= $this->GetJSFiles() ?>
 
 	<?= $this->GetStyles() ?>

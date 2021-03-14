@@ -1,69 +1,65 @@
 'use strict';
 
-(function ($) {
-	const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+(function () {
+	// Promise based setTimeout
+	//const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-	class Ajax {
-		static Call(url, method, params) {
-			let xhr = new XMLHttpRequest();
+	function $(query) {
+		return document.querySelectorAll(query);
+	}
 
-			return new Promise((resolve, reject) => {
-				xhr.addEventListener('load', (e) => {
-					let ret = xhr.response ?? null
-					if( ret instanceof String || xhr.responseType == '' || xhr.responseType == 'text' ) {
-						try {
-							let t = JSON.parse(xhr.responseText);
-							ret = t;
-						} catch(e) {
-							// do nothing
-						}
-					}
+	function ajax() {
+		return atomic.apply(null, arguments).then((resp) => {
+			let ret = resp;
 
-					resolve({
-						'error': false,
-						'data': ret,
-						'responseCode': xhr.status
-					});
-				});
-				xhr.addEventListener('abort', (e) => {
-					reject({
-						'error': true,
-						'msg': 'Request was cancelled',
-						'responseCode': xhr.status
-					});
-				});
-				xhr.addEventListener('error', (e) => {
-					reject({
-						'error': true,
-						'msg': 'An error has occured',
-						'responseCode': xhr.status,
-						'responseStatus': xhr.statusText
-					});
-				});
+			if( resp && resp.data )
+				ret = resp.data;
 
-				// TODO: handle params for querystring / postdata
-				// See: https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Using_XMLHttpRequest#submitting_forms_and_uploading_files
+			if( !ret || ret.error )
+				return Promise.reject(ret);
 
-				xhr.open(method || 'GET', url, true);
-				xhr.send();
-			});
+			return Promise.resolve(ret);
+		}).catch((resp) => {
+			let ret = resp;
+			if( resp && resp.responseText ) {
+				try {
+					ret = JSON.parse(resp.responseText);
+				} catch(e) {
+					// don't replace the response text
+				}
+			}
+
+			if( !ret || ret.error )
+				return Promise.reject(ret);
+
+			return Promise.resolve(ret);
+		});
+	}
+
+	class PageView {
+		loadingCnt = 0;
+
+		startLoading() {
+			this.loadingCnt++;
+
+			if( this.loadingCnt >= 1 )
+				$('.page-holdder > .loading')[0].classList.add('active');
 		}
 
-		static async Get(url) {
-			return await Ajax.Call(url, 'GET');
-		}
+		endLoading() {
+			this.loadingCnt--;
 
-		static async Post(url, data) {
-			return await Ajax.Call(url, 'POST', data);
+			if( this.loadingCnt <= 0 )
+				$('.page-holdder > .loading')[0].classList.remove('active');
 		}
 	}
 
 	class Nav {
 		buildMenu() {
-			Ajax.Get('/api/Debug/Nav/Get').then((resp) => {
-				console.log(resp);
+			ajax('/api/Debug/Nav/Get').then((resp) => {
+				console.log('nav-success', resp);
 			}).catch((resp) => {
-				console.log('error', resp);
+				console.log('nav-error', resp);
 			});
 		}
 	}
@@ -72,12 +68,6 @@
 	$(function () {
 		nav = new Nav();
 		nav.buildMenu();
-
-		Ajax.Get('/api/Debug/NonExistant/Get').then((resp) => {
-			console.log('success', resp);
-		}).catch((resp) => {
-			console.log('error', resp);
-		});
 	});
 
-})(jQuery);
+})();
