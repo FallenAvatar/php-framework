@@ -1,6 +1,6 @@
-<?php
+<?php declare(strict_types=1);
 
-namespace Email;
+namespace TG\Modules\Email;
 
 class Module extends \Core\Module\Base {
 	public function Init(): void {

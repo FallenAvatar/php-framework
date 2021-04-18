@@ -1,4 +1,7 @@
-<?php $this->SetLayout('error'); ?>
+<?php declare(strict_types=1);
+
+$this->SetLayout('error');
+?>
 <h1>500 - Server Error</h1>
 <p>A server-side error has occured. We apologise for any inconvience. Please try again later.</p>
 <?php if( $this->App->Config->Core->debug ) {

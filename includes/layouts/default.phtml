@@ -1,13 +1,20 @@
-<?php declare(strict_types=1); ?>
+<?php declare(strict_types=1);
+
+$logged_in = false;
+if( \TG\Modules\Security\System::IsLoggedIn() )
+	$logged_in = true;
+
+?>
 <!DOCTYPE html>
 <html lang="en">
-<head>	
+<head>
+	<title><?= $this->App->Config?->Site?->title . ((isset($this->Title) && trim($this->Title) != '') ? ' - '.$this->Title : '') ?></title>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" /> 
 	<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0" />
 
-	<title><?= $this->App->Config?->Site?->title . ((isset($this->Title) && trim($this->Title) != '') ? ' - '.$this->Title : '') ?></title>
+
 	
 	<link rel="stylesheet" href="/css/reset.css" />
 	<link rel="stylesheet" href="/css/layout.css" />
@@ -16,8 +23,8 @@
 	
 	<?= $this->GetStyles() ?>
 	
-	<script src="/js/lib/jquery.min.js"></script>
-	<script src="/js/site.js"></script>
+	<script src="/js/lib/jquery.min.js" defer></script>
+	<script src="/js/site.js" defer></script>
 	
 	<?= $this->GetJSFiles() ?>
 </head>

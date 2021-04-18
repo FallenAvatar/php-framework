@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Core;
 
@@ -24,11 +22,11 @@ class Exception extends \Exception {
 	//protected string $message;
 	public function _getMessage(): string { return $this->message; }
 	//protected int $code;
-	public function _getCode(): int { return $this->code; }
+	public function _getCode(): ?int { return $this->code; }
 	//protected string $file;
-	public function _getFile(): string { return $this->file; }
+	public function _getFile(): ?string { return $this->file; }
 	//protected int $line;
-	public function _getLine(): int { return $this->line; }
+	public function _getLine(): ?int { return $this->line; }
 
 	/* Properties */
 	protected int $severity;
@@ -38,7 +36,7 @@ class Exception extends \Exception {
 	protected ?array $backtrace;
 	public function _getBacktrace(): ?array { return $this->backtrace; }
 
-	public function __construct( string $message, int $code, int $severity, string $filename, int $lineno, ?Exception $previous = null, ?array $backtrace = null ) {
+	public function __construct( string $message, ?int $code = null, ?int $severity = null, ?string $filename = null, ?int $lineno = null, ?Exception $previous = null, ?array $backtrace = null ) {
 		$this->message = $message;
 		$this->code = $code;
 		$this->severity = $severity;

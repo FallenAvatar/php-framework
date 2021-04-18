@@ -1,10 +1,28 @@
 {
 	"name": "tg-security",
-	"module_class": "\\Security\\Module",
+	"module_class": "\\TG\\Modules\\Security\\Module",
 	"autoload": {
-		"Security": "lib/"
+		"\\TG\\Modules\\Security": "lib/"
 	},
 	"depends": [
 		"tg-email"
-	]
+	],
+	"migrations": {
+		"dir": "data/migrations",
+		"ns": "TG\\Modules\\Security\\Data\\Migrations"
+	},
+	"config": {
+		"API": {
+			"ns": [
+				{
+					"action": "add",
+					"name": "security-api",
+					"value": {
+						"prefix": "\\TG\\Modules\\Security\\",
+						"ns": "\\TG\\Modules\\Security\\API"
+					}
+				}
+			]
+		}
+	}
 }

@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Core\Data;
 
@@ -143,6 +141,12 @@ abstract class Database extends \Core\Obj {
 					$rows = $sth->rowCount();
 				} else if( $opts[$i] == 'n' || $opts[$i] == 'null' ) {
 					// Intentionally blank
+				} else if( $opts[$i] == 'q' || $opts[$i] == 'query' ){
+					$t = $sth->fetchAll(\PDO::FETCH_ASSOC);
+					$rows = [];
+
+					foreach($t as $row)
+						$rows[] = $row;
 				} else {
 					$t = $sth->fetchAll(\PDO::FETCH_ASSOC);
 					$rows = [];
@@ -154,8 +158,7 @@ abstract class Database extends \Core\Obj {
 			} else
 				$rows = $sth->fetchAll(\PDO::FETCH_ASSOC);
 
-			if( isset($rows) )
-				$ret[] = $rows;
+			$ret[] = $rows;
 		} while( (++$i >= 0) && $sth->nextRowset() );
 
 		return $ret;
@@ -210,10 +213,12 @@ abstract class Database extends \Core\Obj {
 	}
 
 	public function CommitTransaction(): void {
-		$this->dbh->commit();
+		if( $this->dbh->inTransaction() )
+			$this->dbh->commit();
 	}
 
 	public function RollbackTransaction(): void {
-		$this->dbh->rollBack();
+		if( $this->dbh->inTransaction() )
+			$this->dbh->rollBack();
 	}
 }

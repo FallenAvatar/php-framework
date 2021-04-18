@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Site\API\Security {
 	class Role extends \Site\API\Base {
@@ -10,7 +10,7 @@ namespace Site\API\Security {
 			if( isset($id) && (!is_numeric($id) || ($id = intval($id)) <= 0) )
 				return array('error' => true, 'message' => 'Invalid Role ID.');
 
-			$item = new \Site\Data\Security\Role($id);
+			$item = new \Site\Data\TG\Modules\Security\Role($id);
 			$item->name = $name;
 			$item->display_name = $display_name;
 			$item->Save();
@@ -25,7 +25,7 @@ namespace Site\API\Security {
 			if( !isset($id) || (!is_numeric($id) || intval($id) <= 0) )
 				return array('error' => true, 'message' => 'Invalid Role ID.');
 			
-			$item = new \Site\Data\Security\Role(intval($id));
+			$item = new \Site\Data\TG\Modules\Security\Role(intval($id));
 			$item->Delete();
 			
 			return array('error' => false, 'message' => 'Role has been removed.', 'actions' => array(['type' => 'remove', 'ele' => '#roles-table tr[data-id='.$id.']']));

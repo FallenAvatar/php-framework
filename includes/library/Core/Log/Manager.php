@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Core\Log;
 
@@ -10,12 +8,9 @@ const LEVEL_WARN = 4;
 const LEVEL_ERROR = 8;
 
 class Manager {
-	private static Wrapper $wrapper = null;
+	private static ?Wrapper $wrapper = null;
 
 	public static function Init(): void {
-		if( self::$wrapper != null )
-			return;
-
 		self::$wrapper = new Wrapper();
 		$config = \Core\Application::Get()->Config->Core->Logging;
 

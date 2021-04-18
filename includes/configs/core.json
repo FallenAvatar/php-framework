@@ -2,14 +2,16 @@
 	"API": {
 		"enabled": false,
 		"base_url": "/api/",
-		"ns": "\\Site\\API"
-	},
-	"CMS": {
-		"enabled": false,
-		"database": {
-			"connection": "default",
-			"table_prefix": "cms"
-		}
+		"ns": [
+			{
+				"action": "add",
+				"name": "site-api",
+				"value": {
+					"prefix": "\\Site\\",
+					"ns": "\\Site\\API"
+				}
+			}
+		]
 	},
 	"PHP": {
 		"functions": [
@@ -24,28 +26,6 @@
 	"Core": {
 		"debug": false,
 		"require_ssl": false,
-		"handlers": [
-			{
-				"action": "add",
-				"name": "static-file-handler",
-				"value": "\\Core\\Handlers\\StaticFileHandler"
-			},
-			{
-				"action": "add",
-				"name": "scss-handler",
-				"value": "\\Core\\Handlers\\ScssHandler"
-			},
-			{
-				"action": "add",
-				"name": "api-handler",
-				"value": "\\Core\\Handlers\\APIHandler"
-			},
-			{
-				"action": "add",
-				"name": "page-handler",
-				"value": "\\Core\\Handlers\\PageHandler"
-			}
-		],
 		"Data": {
 			"defaultConnectionName": "default"
 		},
@@ -69,9 +49,33 @@
 					"level": 12
 				}
 			}
+		},
+		"Web": {
+			"handlers": [
+				{
+					"action": "add",
+					"name": "static-file-handler",
+					"value": "\\Core\\Handlers\\StaticFileHandler"
+				},
+				{
+					"action": "add",
+					"name": "api-handler",
+					"value": "\\Core\\Handlers\\APIHandler"
+				},
+				{
+					"action": "add",
+					"name": "scss-handler",
+					"value": "\\Core\\Handlers\\ScssHandler"
+				},
+				{
+					"action": "add",
+					"name": "page-handler",
+					"value": "\\Core\\Handlers\\PageHandler"
+				}
+			]
 		}
 	},
 	"Site": {
-		"title": "ThisGals LLC :: PHP Framework"
+		"base_url": "/"
 	}
 }

@@ -1,4 +1,7 @@
-<?php $this->SetLayout('error'); ?>
+<?php declare(strict_types=1);
+ 
+ $this->SetLayout('error');
+ ?>
 <h1>404 - Not Found</h1>
 <p>The requested page could not be found.</p>
 <?php if( $this->App->Config->Core->debug ) {

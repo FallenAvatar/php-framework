@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Core\Module;
 
@@ -62,13 +60,24 @@ final class Manager extends \Core\Obj {
 
 		// TODO: Sort based on dependencies
 		foreach( self::$mods as $name => $info ) {
-			if( !isset($info->config['mod_config']) )
+			if( !isset($info->config['config']) )
 				continue;
 
-			$ret[] = $info->config['mod_config'];
+			$ret[] = $info->config['config'];
 		}
 
 		return $ret;
+	}
+
+	public static function RunMigrations() {
+		$app = \Core\Application::Get();
+
+		foreach( self::$mods as $name => $info ) {
+			if( !isset($info->config['migrations']) )
+				continue;
+			
+			$app->RunMigrations($name, $info->config['migrations']['ns'], \Core\IO\Path::Combine($info->Directory, $info->config['migrations']['dir']));
+		}
 	}
 
 	public static function InitModules(): void {

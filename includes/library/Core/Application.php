@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Core;
 
@@ -255,13 +253,15 @@ class Application extends \Core\Obj {
 
 		$this->_fixPhp();
 
+		record_timing(__CLASS__.'::RunMigrations - Start');
+		$this->RunMigrations('core', '\Core\Data\Migrations', \Core\IO\Path::Combine($this->Dirs->Library,'Core','Data','Migrations'));
+		\Core\Module\Manager::RunMigrations();
+		$this->RunMigrations('site', '\Data\Migrations', \Core\IO\Path::Combine($this->Dirs->Data,'migrations'));
+		record_timing(__CLASS__.'::RunMigrations - End');
+
 		record_timing(__CLASS__.'::'.__FUNCTION__.' - Init Modules - Start');
 		\Core\Module\Manager::InitModules();
 		record_timing(__CLASS__.'::'.__FUNCTION__.' - Init Modules - End');
-
-		record_timing(__CLASS__.'::RunMigrations - Start');
-		$this->RunMigrations();
-		record_timing(__CLASS__.'::RunMigrations - End');
 
 		record_timing(__CLASS__.'::OnInit - Start');
 		$this->OnInit();
@@ -324,25 +324,24 @@ class Application extends \Core\Obj {
 		record_timing(__CLASS__.'::'.__FUNCTION__.' - End');
 	}
 
-	protected function RunMigrations(): void {
+	public function RunMigrations(string $module, string $ns, string $dir_path): void {
 		$files = [];
 		$migrations = [];
-		$dp = \Core\IO\Path::Combine($this->Dirs->Data,'migrations');
-		if( !is_dir($dp) )
+		if( !is_dir($dir_path) )
 			return;
 
-		$d = \dir($dp);
+		$d = \dir($dir_path);
 
 		while( false !== ($f = $d->read()) ) {
-			if( $f == '.' || $f == '..' || !is_file(\Core\IO\Path::Combine($dp,$f)) )
+			if( $f == '.' || $f == '..' || !is_file(\Core\IO\Path::Combine($dir_path,$f)) )
 				continue;
 
 			if( substr($f, -4) != '.php' )
 				continue;
 
-			$cn = '\\Data\\Migrations\\'.substr($f,0,-4);
-			require_once(\Core\IO\Path::Combine($dp,$f));
-			$migrations[] = new $cn();
+			$cn = $ns.'\\'.substr($f,0,-4);
+			require_once(\Core\IO\Path::Combine($dir_path,$f));
+			$migrations[] = new $cn($dir_path);
 		}
 
 		$d->close();
@@ -353,11 +352,16 @@ class Application extends \Core\Obj {
 
 		$db = \Core\Data\Database::Get();
 
-		$create_sql = 'CREATE TABLE IF NOT EXISTS `framework`.`_db_migrations` (`version` INT UNSIGNED NOT NULL, `dt` BIGINT NOT NULL, PRIMARY KEY (`version`), UNIQUE INDEX `version_UNIQUE` (`version` ASC) VISIBLE, UNIQUE INDEX `dt_UNIQUE` (`dt` ASC) VISIBLE);';
-		$tret = $db->ExecuteMultiple($create_sql.'SELECT MAX('.$db->DelimColumn('version').') FROM '.$db->DelimTable('_db_migrations').' ORDER BY '.$db->DelimColumn('dt').' DESC LIMIT 1;', [], ['nq','s']);
+		$sql = 'CREATE TABLE IF NOT EXISTS `_db_migrations` (`module` VARCHAR(500) NOT NULL DEFAULT \'core\', `version` INT UNSIGNED NOT NULL, `dt` BIGINT NOT NULL, PRIMARY KEY (`module`, `version`), INDEX `module` (`module`));';
+		$sql .= 'SELECT '.$db->DelimColumn('module').', MAX('.$db->DelimColumn('version').') AS '.$db->DelimColumn('version').' FROM '.$db->DelimTable('_db_migrations').' GROUP BY '.$db->DelimColumn('module').';';
+		$tret = $db->ExecuteMultiple($sql, [], ['nq','q']);
 		$curr_ver = 0;
-		if( \is_array($tret) && count($tret) > 0 && \is_numeric($tret[1]) )
-			$curr_ver = $tret[1];
+		if( is_array($tret) && count($tret) > 1 && is_array($tret[1]) ) {
+			foreach( $tret[1] as $row ) {
+				if( $row['module'] == $module )
+					$curr_ver = $row['version'];
+			}
+		}
 
 		foreach( $migrations as $m ) {
 			if( $m->SchemaVersion <= $curr_ver )

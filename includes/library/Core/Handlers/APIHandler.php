@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Core\Handlers;
 
@@ -117,7 +115,7 @@ class APIHandler extends \Core\Obj implements IRequestHandler {
 			if( $signature != $hash )
 				return ['error' => true, 'statusCode' => 403, 'message' => 'Invalid signature supplied.'];
 		} else if( $method_info->isPrivate() ) {
-			$user = \Site\Systems\Security::GetUser();
+			$user = \TG\Modules\Security\System::GetUser();
 			if( !isset($user) )
 				return ['error' => true, 'statusCode' => 403, 'message' => 'No logged in user in the current session.'];
 		}

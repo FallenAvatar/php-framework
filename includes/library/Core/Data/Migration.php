@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Core\Data;
 
@@ -10,19 +10,28 @@ class Migration extends \Core\Obj {
 
 	protected int $schema_version = 0;
 	public function _getSchemaVersion(): int { return $this->schema_version; }
+	protected string $module_name = 'core';
+	public function _getModuleName(): string { return $this->module_name; }
 	protected array $steps;
+	protected string $base_dir;
+	public function _getBaseDir(): string { return $this->base_dir; }
 
-	protected function __construct(int $ver = 0) {
+	protected function __construct(string $module = 'core', int $ver = 0, ?string $base_dir = null) {
+		$this->module_name = $module;
 		$this->schema_version = $ver;
 		$this->steps = [];
+		if( !isset($base_dir) )
+			$this->base_dir = \Core\IO\Path::Combine(\Core\Application::Get()->Dirs->Data, 'migrations');
+		else
+			$this->base_dir = \Core\IO\Path::Combine(\Core\Application::Get()->Dirs->Includes, $base_dir);
 	}
 
 	protected function AddStep(string $name, $func_or_file): void {
-		if( is_string($func_or_file) && is_file(\Core\IO\Path::Combine(\Core\Application::Get()->Dirs->Data,'migrations',$func_or_file)) ) {
+		if( is_string($func_or_file) && is_file(\Core\IO\Path::Combine($this->base_dir,$func_or_file)) ) {
 			$this->steps[] = [
 				'name' => $name,
 				'type' => 'sql',
-				'file' => \Core\IO\Path::Combine(\Core\Application::Get()->Dirs->Data, 'migrations', $func_or_file)
+				'file' => \Core\IO\Path::Combine($this->base_dir, $func_or_file)
 			];
 		} else if( is_callable($func_or_file) ) {
 			$this->steps[] = [
@@ -50,7 +59,7 @@ class Migration extends \Core\Obj {
 				}
 			}
 
-			$db->ExecuteNonQuery('UPDATE '.$db->DelimTable('_db_migrations').' SET '.$db->DelimColumn('value').' = '.$db->DelimParameter('v').' WHERE name = '.$db->DelimParameter('n'),['n' => 'schema_version', 'v' => $this->schema_version]);
+			$db->ExecuteNonQuery('INSERT INTO '.$db->DelimTable('_db_migrations').'('.$db->DelimColumn('module').','.$db->DelimColumn('version').','.$db->DelimColumn('dt').') VALUES ('.$db->DelimParameter('m').', '.$db->DelimParameter('v').', UNIX_TIMESTAMP())',['m' => $this->module_name, 'v' => $this->schema_version]);
 
 			$db->CommitTransaction();
 		} catch(\Throwable $t) {

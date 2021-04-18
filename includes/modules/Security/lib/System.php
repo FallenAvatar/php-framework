@@ -1,6 +1,6 @@
-<?php
+<?php declare(strict_types=1);
 
-namespace Security;
+namespace TG\Modules\Security;
 
 class System {
 	protected static $hashCost = 10;
@@ -17,7 +17,7 @@ class System {
 	
 	public static function GetDevGroup() {
 		if( !isset(static::$devGroup) ) {
-			static::$devGroup = \Security\Data\Group::FindByName('dev');
+			static::$devGroup = \TG\Modules\Security\Data\Group::FindByName('dev');
 		}
 		
 		return static::$devGroup;
@@ -38,7 +38,7 @@ class System {
 		return static::$isDev;
 	}
 	
-	public static function GetUser(): ?\Security\Data\User {
+	public static function GetUser(): ?\TG\Modules\Security\Data\User {
 		return $_SESSION['User'] ?? null;
 	}
 	
@@ -52,7 +52,7 @@ class System {
 			return null;
 		}
 		
-		$user = new \Security\Data\User();
+		$user = new \TG\Modules\Security\Data\User();
 		$user->username = $username;
 		$user->email = $email;
 		$user->password = \password_hash($password, PASSWORD_DEFAULT, ["cost" => static::getHashCost()]);
@@ -75,7 +75,7 @@ class System {
 		return $ret;
 	}
 	
-	public static function ChangePassword(\Security\Data\User $user, $curr_password, $new_password) {
+	public static function ChangePassword(\TG\Modules\Security\Data\User $user, $curr_password, $new_password) {
 		if( !isset($user) || !isset($user->id) || $user->id <= 0 )
 			return false;
 			
@@ -88,7 +88,7 @@ class System {
 		return true;
 	}
 	
-	public static function LoginAs(\Security\Data\User $user) {
+	public static function LoginAs(\TG\Modules\Security\Data\User $user) {
 		if( $user == null || !isset($user->id) || $user->id <= 0 )
 			return false;
 			
@@ -99,7 +99,7 @@ class System {
 	}
 
 	public static function Login($un, $pw) {
-		$user = \Security\Data\User::FindByUsernameOrEmail($un, $un);
+		$user = \TG\Modules\Security\Data\User::FindByUsernameOrEmail($un, $un);
 		
 		if( !isset($user) || count($user) == 0 )
 			return false;
@@ -131,7 +131,7 @@ class System {
 	}
 	
 	public static function UserExists($username, $email) {
-		$users = \Security\Data\User::FindByUsernameOrEmail($username, $email);
+		$users = \TG\Modules\Security\Data\User::FindByUsernameOrEmail($username, $email);
 		
 		if( count($users) > 0 )
 			return true;
@@ -140,7 +140,7 @@ class System {
 	}
 	
 	public static function ForgotPassword($un) {
-		$users = \Security\Data\User::FindByUsernameOrEmail($un, $un);
+		$users = \TG\Modules\Security\Data\User::FindByUsernameOrEmail($un, $un);
 		
 		if( count($users) <= 0 )
 			return false;
@@ -157,7 +157,7 @@ class System {
 	}
 	
 	public static function ResetPassword($guid, $un, $password) {
-		$user = \Security\Data\User::FindByForgotGuid($guid);
+		$user = \TG\Modules\Security\Data\User::FindByForgotGuid($guid);
 		
 		if( $user == null || !isset($user->id) || $user->id < 0 || (strtolower($user->username) != strtolower($un) && strtolower($user->email) != strtolower($un)) )
 			return false;
@@ -172,18 +172,18 @@ class System {
 	public static function GetRole($role) {
 		$ret = null;
 		
-		if( $role instanceof \Security\Data\Role ) {
+		if( $role instanceof \TG\Modules\Security\Data\Role ) {
 			$ret = $role;
 		} else if( is_string($role) ) {
 			if( isset(static::$roleNameCache[$role]) )
 				return static::$roleNameCache[$role];
 
-			$ret = \Security\Data\Role::FindByName($role);
+			$ret = \TG\Modules\Security\Data\Role::FindByName($role);
 		} else if( is_numeric($role) ) {
 			if( isset(static::$roleIdCache[$role]) )
 				return static::$roleIdCache[$role];
 				
-			$ret = \Security\Data\Role::Load($role);
+			$ret = \TG\Modules\Security\Data\Role::Load($role);
 		}
 
 		static::$roleIdCache[$ret->id] = $ret;
@@ -236,7 +236,7 @@ class System {
 		if( static::$preloaded )
 			return;
 
-		$roles = \Security\Data\Role::FindAll();
+		$roles = \TG\Modules\Security\Data\Role::FindAll();
 
 		foreach( $roles as $role ) {
 			static::$roleIdCache[$role->id] = $role;
@@ -252,7 +252,7 @@ class System {
 		$db = \Core\Data\Database::Get();
 		$user = static::GetUser();
 
-		$roles = $db->ExecuteQuery('CALL `sp_get_user_roles`(:user_id)', ['user_id' => $user->id], '\Security\Data\Role');
+		$roles = $db->ExecuteQuery('CALL `sp_get_user_roles`(:user_id)', ['user_id' => $user->id], '\TG\Modules\Security\Data\Role');
 
 		$i = 0;
 	}

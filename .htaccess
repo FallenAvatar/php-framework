@@ -4,17 +4,25 @@ DirectoryIndex index.php
 RewriteEngine On
 RewriteBase /
 
+# Force HTTPS
 #RewriteCond %{HTTPS} !=on
-#RewriteRule ^/?(.*) https://%{SERVER_NAME}/$1 [R,L]
+#RewriteRule ^/?(.*)$ https://%{HTTP_HOST}/$1 [R,L]
 
-# Prevent direct access to includes and config files
+# Prevent direct access to anything in the includes folder (code, configs, modules, data, etc)
 RewriteRule ^includes/(.*)$ error/404 [R=301,L,NC]
 
 # Prevent Infinite Loop
 RewriteRule ^includes/library/base.php$ - [L,NC]
 
-# Rewrite appropiate URLs to our engine
+# Rewrite appropriate URLs to our engine
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /includes/library/base.php [L]
+
 RewriteRule ^$ includes/library/base.php [L,NC,QSA]
 RewriteRule ^(.*)/$ includes/library/base.php [L,NC,QSA]
 RewriteRule ^((.*/)*([^/\.]+))$ includes/library/base.php [L,NC,QSA]
-RewriteRule ^(.*)\.(php|phtml|html|json|css)$ includes/library/base.php [L,NC,QSA]
+RewriteRule ^(.*)\.(php|phtml|html|json)$ includes/library/base.php [L,NC,QSA]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)\.(html|js|css)$ includes/library/base.php [L,NC,QSA]

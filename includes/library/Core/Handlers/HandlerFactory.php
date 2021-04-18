@@ -5,7 +5,7 @@ namespace Core\Handlers;
 class HandlerFactory extends \Core\Obj {
 	public static function ProcessRequest(): string {
 		$App = \Core\Application::Get();
-		$handler_classes = $App->Config->Core->handlers;
+		$handler_classes = $App->Config->Core->Web->handlers;
 
 		$found = false;
 		$found_name = null;

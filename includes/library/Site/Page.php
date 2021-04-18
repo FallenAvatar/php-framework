@@ -4,11 +4,11 @@ namespace Site;
 
 class Page extends \Core\Web\UI\Page {
 	protected function RequireRole($role) {
-		$r = \Site\Systems\Security::GetRole($role);
+		$r = \TG\Modules\Security\System::GetRole($role);
 
 		if( !isset($r) )
-			throw new \Exception('Argument $role is not a valid Role. Must be an integer, string or \Site\Data\Security\Role');
+			throw new \Exception('Argument $role is not a valid Role. Must be an integer, string or \TG\Modules\Security\Data\Role');
 
-		return \Site\Systems\Security::HasRole($role);
+		return \TG\Modules\Security\System::HasRole($role);
 	}
 }

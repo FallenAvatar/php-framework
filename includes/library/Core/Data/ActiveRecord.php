@@ -1,10 +1,13 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Core\Data;
 
 abstract class ActiveRecord extends \Core\Obj implements \JsonSerializable {
+	protected static ?string $db_name = null;
+	protected static ?string $table_name = null;
+	protected static ?array $columns = null;
+	protected static ?array $relationships = null;
+
 	public static function FindAll(?array $order_by = null): array {
 		$db = static::GetDb();
 		$tbl_name = static::$table_name;
@@ -148,8 +151,8 @@ abstract class ActiveRecord extends \Core\Obj implements \JsonSerializable {
 			$lbracket = strpos($type, '[');
 			if( $lbracket !== false && $lbracket >= 0 ) {
 				$rbracket = strpos($type, ']');
-				$lenstr = substr($type, $lbracket+1, ($rbracket-$lbracket)-1);
-				$ret['length'] = intval($lenstr);
+				$len_str = substr($type, $lbracket+1, ($rbracket-$lbracket)-1);
+				$ret['length'] = intval($len_str);
 				
 				$ret['type'] = substr($type, 0, $lbracket);
 			} else
@@ -334,16 +337,14 @@ abstract class ActiveRecord extends \Core\Obj implements \JsonSerializable {
 	
 	public function __set(string $name, $value): void {
 		if( method_exists($this, '_set'.$name) )
-			return \call_user_method_array('_set'.$name, $this, [$value]);
+			call_user_func_array([$this, '_set'.$name], [$value]);
 		else if( in_array($name, $this->keys) && count($this->keys) == 1 )
 			throw new \Exception('You can not set the primary key for a table with one primary key.');
-		
-		if( array_key_exists($name, $this->cols) ) {
+		else if( array_key_exists($name, $this->cols) ) {
 			$this->data[$name] = $value;
 			return;
-		}
-		
-		throw new \Exception('Property ['.$name.'] not found.');
+		} else
+			throw new \Exception('Property ['.$name.'] not found.');
 	}
 	
 	public function __isset(string $name): bool {
@@ -358,7 +359,7 @@ abstract class ActiveRecord extends \Core\Obj implements \JsonSerializable {
 			throw new \Exception('You can not set the primary key for a table with one primary key.');
 		
 		if( array_key_exists($name, $this->cols) )
-			return $this->data[$name] = null;
+			$this->data[$name] = null;
 	}
 	
 	public function __call(string $name, array $args) {
